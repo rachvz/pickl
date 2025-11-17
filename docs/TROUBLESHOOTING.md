@@ -646,8 +646,6 @@ file:///full/path/to/test-results/html-report/index.html
 
 ---
 
-## 🔧 Environment Configuration
-
 ---
 
 ## Environment Configuration

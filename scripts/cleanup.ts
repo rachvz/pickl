@@ -11,12 +11,13 @@
  *   node scripts/cleanup.ts
  */
 
+import 'dotenv/config'
 import { rm, access } from 'fs/promises'
 import { join } from 'path'
 import { constants } from 'fs'
 import Debug from 'debug'
 
-const debug = Debug('framework: cleanup')
+const debug = Debug('framework:cleanup')
 
 interface CleanupTarget {
   path: string
@@ -69,27 +70,32 @@ async function exists(path: string): Promise<boolean> {
   }
 }
 
-async function cleanupDirectory(target: CleanupTarget): Promise<void> {
+type CleanupResult = 'cleaned' | 'skipped' | 'notFound'
+
+async function cleanupDirectory(target: CleanupTarget): Promise<CleanupResult> {
   const fullPath = join(process.cwd(), target.path)
 
-  if (await exists(fullPath)) {
-    try {
-      await rm(fullPath, { recursive: true, force: true })
-      debug(`✓ Cleaned: ${target.description} (${target.path})`)
-    } catch (error) {
-      if (target.optional) {
-        debug(
-          `⚠ Skipped: ${target.description} (${target.path}) - ${error instanceof Error ? error.message : 'Unknown error'}`,
-        )
-      } else {
-        debug(
-          `✗ Failed: ${target.description} (${target.path}) - ${error instanceof Error ? error.message : 'Unknown error'}`,
-        )
-        throw error
-      }
-    }
-  } else {
+  if (!(await exists(fullPath))) {
     debug(`○ Not found: ${target.description} (${target.path})`)
+    return 'notFound'
+  }
+
+  try {
+    await rm(fullPath, { recursive: true, force: true })
+    debug(`✓ Cleaned: ${target.description} (${target.path})`)
+    return 'cleaned'
+  } catch (error) {
+    if (target.optional) {
+      debug(
+        `⚠ Skipped: ${target.description} (${target.path}) - ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+      return 'skipped'
+    } else {
+      debug(
+        `✗ Failed: ${target.description} (${target.path}) - ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+      throw error
+    }
   }
 }
 
@@ -101,22 +107,14 @@ async function cleanup(): Promise<void> {
   let notFound = 0
 
   for (const target of CLEANUP_TARGETS) {
-    try {
-      const fullPath = join(process.cwd(), target.path)
-      const targetExists = await exists(fullPath)
+    const result = await cleanupDirectory(target)
 
-      if (targetExists) {
-        await cleanupDirectory(target)
-        cleaned++
-      } else {
-        notFound++
-      }
-    } catch (error) {
-      if (target.optional) {
-        skipped++
-      } else {
-        throw error
-      }
+    if (result === 'cleaned') {
+      cleaned++
+    } else if (result === 'skipped') {
+      skipped++
+    } else if (result === 'notFound') {
+      notFound++
     }
   }
 

@@ -61,6 +61,7 @@ PICKL is a modern BDD test automation boilerplate that combines Playwright's pow
 ### 🤝 Contributing
 
 - [Contributing Guide](docs/CONTRIBUTING.md) - How to contribute to PICKL
+- [npm Scripts Reference](docs/CONTRIBUTING.md#available-npm-scripts) - Complete guide to available scripts
 - [Branching Strategy](docs/BRANCHING-STRATEGY.md) - Git workflow guidelines
 - [Pull Request Guide](docs/PULL-REQUEST.md) - PR best practices
 - [Naming Convention](docs/NAMING-CONVENTION.md) - Code naming standards

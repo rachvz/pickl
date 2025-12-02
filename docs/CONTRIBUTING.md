@@ -6,6 +6,7 @@ Thank you for your interest in contributing to PICKL! This guide will help you s
 
 - [Getting Started with Contributions](#getting-started-with-contributions)
 - [Setting Up for Development](#setting-up-for-development)
+- [Available npm Scripts](#available-npm-scripts)
 - [Code Contribution Guidelines](#code-contribution-guidelines)
 - [Adding New Features](#adding-new-features)
 - [Testing Best Practices](#testing-best-practices)
@@ -176,6 +177,338 @@ Install the recommended extensions for the best development experience (see [Get
 - **Playwright Test** - Playwright support
 - **TODO Tree** - Highlight TODO/FIXME comments
 - **Cucumber** - Gherkin syntax support
+
+---
+
+## Available npm Scripts
+
+This framework provides several npm scripts to streamline development and testing workflows. Below is a comprehensive reference organized by purpose.
+
+### 🧹 Cleanup Scripts
+
+#### `npm run clean`
+
+Remove only the test results directory.
+
+```bash
+npm run clean
+```
+
+**When to use:**
+
+- Quick cleanup between test runs
+- CI/CD pipeline cleanup step
+- Free up space when test results accumulate
+
+#### `npm run clean:all`
+
+Comprehensive cleanup of all test artifacts and caches.
+
+```bash
+npm run clean:all
+```
+
+**What it removes:**
+
+- `test-results/` - Test execution results
+- `node_modules/.cache/` - Build caches
+- `playwright-report/` - HTML test reports
+- `.playwright/` - Playwright browser cache
+- `coverage/` - Code coverage reports
+- `.nyc_output/` - Coverage instrumentation data
+- `downloads/` - Downloaded test files
+
+**When to use:**
+
+- Disk space running low
+- Clean slate before major test runs
+- Troubleshooting build/cache issues
+- Before creating a release
+
+**Debug output:**
+
+```bash
+# See detailed cleanup logs
+DEBUG=framework:cleanup npm run clean:all
+```
+
+### 🧪 Testing Scripts
+
+#### `npm test`
+
+Run all tests with default configuration (Chromium browser).
+
+```bash
+npm test
+```
+
+**Output:** Generates test results in `test-results/` directory.
+
+#### `npm run test:chromium`
+
+Run tests specifically in Chromium browser.
+
+```bash
+npm run test:chromium
+```
+
+**Use case:** Verify Chromium-specific behavior or troubleshoot browser-specific issues.
+
+#### `npm run test:firefox`
+
+Run tests specifically in Firefox browser.
+
+```bash
+npm run test:firefox
+```
+
+**Use case:** Cross-browser testing, Firefox-specific scenarios.
+
+#### `npm run test:webkit`
+
+Run tests specifically in WebKit browser (Safari engine).
+
+```bash
+npm run test:webkit
+```
+
+**Use case:** Safari compatibility testing, iOS simulation.
+
+#### `npm run test:smoke`
+
+Run only smoke tests (scenarios tagged with `@smoke`).
+
+```bash
+npm run test:smoke
+```
+
+**When to use:**
+
+- Quick validation after code changes
+- Pre-commit checks
+- CI/CD gate before full test suite
+- Rapid feedback during development
+
+**Example scenario tags:**
+
+```gherkin
+@smoke
+Scenario: Login with valid credentials
+  Given I am on the login page
+  When I enter valid credentials
+  Then I should be logged in successfully
+```
+
+#### `npm run test:regression`
+
+Run only regression tests (scenarios tagged with `@regression`).
+
+```bash
+npm run test:regression
+```
+
+**When to use:**
+
+- Full regression suite before releases
+- Scheduled nightly test runs
+- Post-deployment validation
+- Comprehensive feature coverage testing
+
+#### `npm run test:clean`
+
+Clean test results, then run all tests.
+
+```bash
+npm run test:clean
+```
+
+**Equivalent to:**
+
+```bash
+npm run clean && npm test
+```
+
+**When to use:**
+
+- Ensure fresh test run without old artifacts
+- Automated CI/CD test execution
+- Debugging test result issues
+
+### 📊 Reporting Scripts
+
+#### `npm run report`
+
+Generate and open HTML test report.
+
+```bash
+npm run report
+```
+
+**What it does:**
+
+1. Processes test results from `test-results/` directory
+2. Generates HTML report in `playwright-report/` directory
+3. Automatically opens report in default browser
+
+**When to use:**
+
+- After test execution to view results
+- Analyze test failures with screenshots and traces
+- Share test results with team members
+- Review historical test trends
+
+**Report includes:**
+
+- Test execution summary
+- Pass/fail statistics
+- Screenshots of failures
+- Execution traces
+- Error stack traces
+- Test duration metrics
+
+### 🔧 Code Quality Scripts
+
+#### `npm run lint`
+
+Run ESLint to check for code quality issues.
+
+```bash
+npm run lint
+```
+
+**Checks for:**
+
+- TypeScript syntax errors
+- Code style violations
+- Unused variables/imports
+- Type safety issues
+- Best practice violations
+
+**Auto-fix issues:**
+
+```bash
+npm run lint -- --fix
+```
+
+**When to use:**
+
+- Before committing code
+- During code review
+- In pre-commit hooks
+- CI/CD quality gates
+
+#### `npm run format`
+
+Format code with Prettier.
+
+```bash
+npm run format
+```
+
+**What it formats:**
+
+- JavaScript/TypeScript files (`.js`, `.ts`)
+- JSON configuration files
+- Markdown documentation files
+
+**When to use:**
+
+- Before committing code
+- After bulk code changes
+- Ensuring consistent code style across team
+- Pre-commit hooks
+
+---
+
+### 🔗 Common Script Combinations
+
+#### Pre-commit workflow
+
+```bash
+npm run lint           # Check for linting errors
+npm run format         # Format all code
+npm run test:smoke     # Run quick smoke tests
+```
+
+#### Full quality check before PR
+
+```bash
+npm run clean:all      # Clean all artifacts
+npm run lint           # Check code quality
+npm run format         # Format code
+npm test               # Run full test suite
+npm run report         # View test results
+```
+
+#### Cross-browser testing workflow
+
+```bash
+npm run clean
+npm run test:chromium
+npm run test:firefox
+npm run test:webkit
+npm run report
+```
+
+#### CI/CD pipeline workflow
+
+```bash
+npm run clean:all      # Clean environment
+npm run lint           # Code quality gate
+npm run test:smoke     # Quick validation
+npm test               # Full test suite
+npm run report         # Generate results
+```
+
+---
+
+### 💡 Tips and Tricks
+
+**1. Run specific feature files:**
+
+```bash
+npm test -- test/features/login.feature
+```
+
+**2. Run with custom tags:**
+
+```bash
+TAGS=@positive npm test
+```
+
+**3. Combine multiple tags:**
+
+```bash
+TAGS="@smoke and @positive" npm test
+```
+
+**4. Run in headed mode (see browser):**
+
+```bash
+HEADLESS=false npm test
+```
+
+**5. Debug tests with Playwright Inspector:**
+
+```bash
+PWDEBUG=1 npm test -- test/features/login.feature
+```
+
+**6. Run with debug logging:**
+
+```bash
+DEBUG=framework:*,test:* npm test
+```
+
+**7. Chain cleanup with specific browser:**
+
+```bash
+npm run clean && BROWSER=firefox npm test
+```
+
+---
+
+For more detailed information about test execution options, see the [Running Tests Guide](RUNNING-TESTS.md).
 
 ---
 

@@ -70,8 +70,8 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Store current branch
-          current_branch=$(git branch --show-current)
+          # Ensure we're on a proper branch (CI might be in detached HEAD)
+          git checkout -B temp-ci-branch
 
           # Create test file and branch
           echo "// test file" > test-hook-verification.js
@@ -87,7 +87,7 @@ jobs:
           fi
 
           # Clean up
-          git checkout "$current_branch"
+          git checkout temp-ci-branch
           git branch -D test-hook-branch
           rm -f test-hook-verification.js
 

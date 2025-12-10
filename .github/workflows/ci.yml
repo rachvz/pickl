@@ -38,37 +38,100 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify hooks installation
-        run: npm run verify:hooks
-
-      - name: Verify hook line endings
+      - name: Verify Husky hooks are installed
         run: |
+          echo "🔍 Checking for git hooks installation..."
+
+          # Check if .husky directory exists
+          if [ ! -d ".husky" ]; then
+            echo "❌ Error: .husky directory not found"
+            exit 1
+          fi
+          echo "✅ .husky directory exists"
+
+          # Check if pre-commit hook exists and is executable
+          if [ ! -f ".husky/pre-commit" ]; then
+            echo "❌ Error: pre-commit hook not found"
+            exit 1
+          fi
+          echo "✅ pre-commit hook exists"
+
+          # Check if commit-msg hook exists and is executable
+          if [ ! -f ".husky/commit-msg" ]; then
+            echo "❌ Error: commit-msg hook not found"
+            exit 1
+          fi
+          echo "✅ commit-msg hook exists"
+
+          # Verify pre-commit hook contains branch protection
+          if ! grep -q "Direct commits to.*branch are not allowed" .husky/pre-commit; then
+            echo "❌ Error: pre-commit hook missing branch protection"
+            exit 1
+          fi
+          echo "✅ pre-commit hook has branch protection"
+
+          # Verify pre-commit hook runs lint-staged
+          if ! grep -q "lint-staged" .husky/pre-commit; then
+            echo "❌ Error: pre-commit hook missing lint-staged execution"
+            exit 1
+          fi
+          echo "✅ pre-commit hook runs lint-staged"
+
+          # Verify commit-msg hook validates conventional commits
+          if ! grep -q "conventional" .husky/commit-msg; then
+            echo "❌ Error: commit-msg hook missing conventional commits validation"
+            exit 1
+          fi
+          echo "✅ commit-msg hook validates conventional commits"
+
+          echo ""
+          echo "🎉 All git hooks are properly configured!"
+
+      - name: Verify lint-staged configuration
+        run: |
+          echo "🔍 Checking lint-staged configuration..."
+
+          # Check if lint-staged config exists in package.json
+          if ! grep -q "lint-staged" package.json; then
+            echo "❌ Error: lint-staged configuration not found in package.json"
+            exit 1
+          fi
+          echo "✅ lint-staged configuration exists"
+
+          # Verify lint-staged has JS/TS file patterns
+          if ! grep -q '"*.{js,ts}"' package.json; then
+            echo "⚠️  Warning: Expected lint-staged pattern for JS/TS files not found"
+          fi
+          echo "🎉 lint-staged configuration verified!"
+
+      - name: Test pre-commit hook (dry run)
+        run: |
+          echo "🧪 Testing pre-commit hook behavior..."
+
+          # Configure git user for CI
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Verify hook files have LF line endings (not CRLF)
+          # CRLF line endings cause "command not found" errors in Unix
           echo "Checking hook file line endings..."
-          if grep -q $'\r' .husky/pre-commit; then
+          if file .husky/pre-commit | grep -q CRLF || grep -q $'\r' .husky/pre-commit; then
             echo "❌ Error: .husky/pre-commit has CRLF line endings"
             echo "   Run 'npm run format' to fix line endings"
             exit 1
           fi
-          if grep -q $'\r' .husky/commit-msg; then
+          if file .husky/commit-msg | grep -q CRLF || grep -q $'\r' .husky/commit-msg; then
             echo "❌ Error: .husky/commit-msg has CRLF line endings"
             echo "   Run 'npm run format' to fix line endings"
             exit 1
           fi
           echo "✅ Hook files have correct LF line endings"
-
-      - name: Test pre-commit hook behavior
-        run: |
-          echo "🧪 Testing pre-commit hook on feature branch..."
-
-          # Configure git user for CI
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
 
           # Create a test file
           echo "// test file" > test-hook-verification.js
@@ -78,7 +141,7 @@ jobs:
           echo "Testing hook on feature branch..."
           git checkout -b test-hook-branch
 
-          # The hook should allow this commit
+          # The hook should allow this commit (no --no-verify to actually test the hook)
           if git commit -m "test: verify hook allows commits on feature branch"; then
             echo "✅ Hook correctly allows commits on feature branch"
           else

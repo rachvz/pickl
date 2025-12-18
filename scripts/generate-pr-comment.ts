@@ -174,8 +174,8 @@ function generateComment(results: TestResults): string {
   comment += `- [📄 Full HTML Report](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID})\n`
   comment += `- [📊 Test Results JSON](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID})\n`
   if (results.failedScenarios > 0) {
-    comment += `- [📸 Screenshots](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID}) (if failures occurred)\n`
-    comment += `- [🎥 Videos](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID}) (if failures occurred)\n`
+    comment += `- [📸 Screenshots](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID}) – open this run and download the "Screenshots" artifact from the Artifacts section (if available)\n`
+    comment += `- [🎥 Videos](https://github.com/$\{GITHUB_REPOSITORY}/actions/runs/$\{GITHUB_RUN_ID}) – open this run and download the "Videos" artifact from the Artifacts section (if available)\n`
   }
 
   comment += `\n---\n`

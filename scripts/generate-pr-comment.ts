@@ -198,9 +198,9 @@ async function generatePRComment(): Promise<void> {
 
   debug('✅ PR comment generated: test-results/pr-comment.md')
 
-  // Exit with error if tests failed
+  // Log test failures but do not exit; the CI workflow handles test failure status separately
   if (results.failedScenarios > 0) {
-    process.exit(1)
+    debug(`⚠️ Tests have ${results.failedScenarios} failed scenario(s).`)
   }
 }
 

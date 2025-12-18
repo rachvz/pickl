@@ -315,7 +315,7 @@ jobs:
 
       - name: Generate PR comment
         if: always() && github.event_name == 'pull_request'
-        run: tsx scripts/generate-pr-comment.ts
+        run: npm run report:pr
         continue-on-error: true
 
       - name: Post PR comment

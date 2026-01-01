@@ -10,6 +10,86 @@ on:
     - cron: '0 0 * * 1'
 
 jobs:
+  validate-commits:
+    name: Validate Commit Messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        run: |
+          # Get code owners from CODEOWNERS file dynamically
+          if [ -f ".github/CODEOWNERS" ]; then
+            # Extract individual GitHub usernames (not teams)
+            # Pattern: @username (alphanumerics, underscores and hyphens, no teams like @org/team)
+            # GitHub usernames: start with alphanumeric, can contain underscores and hyphens
+            CODE_OWNERS=$(grep -oE '@[a-zA-Z0-9][a-zA-Z0-9_-]*' .github/CODEOWNERS | grep -v '/' | sed 's/@//' | sort -u)
+          else
+            # Fallback if CODEOWNERS doesn't exist
+            CODE_OWNERS=""
+          fi
+
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          # Check if PR author is in code owners list
+          IS_CODE_OWNER=false
+          for OWNER in $CODE_OWNERS; do
+            if [ "$PR_AUTHOR" == "$OWNER" ]; then
+              IS_CODE_OWNER=true
+              break
+            fi
+          done
+
+          if [ "$IS_CODE_OWNER" == "true" ]; then
+            echo "⚠️  Validation skipped: $PR_AUTHOR is a code owner"
+            exit 0
+          fi
+
+          # Get the list of commits in this PR
+          COMMITS=$(git log "refs/remotes/origin/${{ github.base_ref }}"..HEAD --pretty=format:"%H")
+
+          # Conventional Commits regex pattern
+          # Format: type(scope): description
+          # Types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert
+          # Description must contain at least one non-whitespace character
+          PATTERN='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: \S.*'
+
+          INVALID_COMMITS=()
+
+          for COMMIT in $COMMITS; do
+            MESSAGE=$(git log --format=%s -n 1 $COMMIT)
+
+            if ! echo "$MESSAGE" | grep -qE "$PATTERN"; then
+              INVALID_COMMITS+=("$COMMIT: $MESSAGE")
+            fi
+          done
+
+          if [ ${#INVALID_COMMITS[@]} -gt 0 ]; then
+            echo "❌ The following commits do not follow Conventional Commits format:"
+            echo ""
+            for INVALID in "${INVALID_COMMITS[@]}"; do
+              echo "  - $INVALID"
+            done
+            echo ""
+            echo "Expected format: type(scope): description"
+            echo "Valid types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+            echo ""
+            echo "Examples:"
+            echo "  ✅ feat(login): add remember me checkbox"
+            echo "  ✅ fix(api): resolve timeout issue"
+            echo "  ✅ docs: update README with new examples"
+            echo ""
+            echo "See: https://www.conventionalcommits.org/"
+            exit 1
+          fi
+
+          echo "✅ All commit messages follow Conventional Commits format"
+
   security:
     name: Security Audit
     runs-on: ubuntu-latest

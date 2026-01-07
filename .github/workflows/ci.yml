@@ -507,7 +507,12 @@ jobs:
             const statusText = isPassed ? 'PASSED' : 'FAILED';
 
             // Add OS identifier to comment header
-            const osEmoji = os.includes('ubuntu') ? '🐧' : os.includes('windows') ? '🪟' : '🍎';
+            let osEmoji = '🍎';
+            if (os.includes('ubuntu')) {
+              osEmoji = '🐧';
+            } else if (os.includes('windows')) {
+              osEmoji = '🪟';
+            }
             comment = `## ${osEmoji} Test Results (${os}) - ${statusText} ${statusEmoji}\n\n` + comment;
 
             // Add unique marker for this OS

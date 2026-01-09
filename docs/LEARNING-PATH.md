@@ -750,26 +750,6 @@ Track your progress each day:
 
 ---
 
-## 📚 Resources
-
-### Essential Reading
-
-- [Getting Started Guide](GETTING-STARTED.md)
-- [Architecture Documentation](ARCHITECTURE.md)
-- [Writing Tests Guide](WRITING-TESTS.md)
-- [Training Exercises](TRAINING-EXERCISES.md)
-- [API Reference](API-REFERENCE.md)
-- [Common Mistakes Guide](COMMON-MISTAKES.md)
-- [Troubleshooting Guide](TROUBLESHOOTING.md)
-
-### External Resources
-
-- [Playwright Documentation](https://playwright.dev/)
-- [Cucumber Documentation](https://cucumber.io/docs/cucumber/)
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-
----
-
 ## 🎯 Learning Outcomes
 
 Upon successful completion, you will be able to:

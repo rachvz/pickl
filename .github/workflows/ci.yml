@@ -286,8 +286,8 @@ jobs:
             echo "✅ Only @fail tagged tests failed (expected behavior)"
           else
             echo "❌ Unexpected test failures detected!"
-            echo "   $FAILED_WITHOUT_FAIL_TAG test(s) without @fail tag failed"
-            jq -r '[.[] | .elements[] | select(.steps[]?.result.status == "failed" and ([.tags[]?.name] | contains(["@fail"]) | not)) | .name] | join("\n  - ")' test-results/cucumber-report.json | sed 's/^/  - /'
+            echo "  $FAILED_WITHOUT_FAIL_TAG test(s) without @fail tag failed"
+            jq -r '[.[] | .elements[] | select(.steps[]?.result.status == "failed" and ([.tags[]?.name] | contains(["@fail"]) | not)) | .name] | join("\n  - ")' test-results/cucumber-report.json
             exit 1
           fi
 

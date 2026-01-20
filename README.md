@@ -90,6 +90,10 @@ PICKL is a modern BDD test automation boilerplate that combines Playwright's pow
 ## 🚀 Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/YOUR-USERNAME/PICKL.git
+cd PICKL
+
 # Install dependencies
 npm install
 
@@ -108,6 +112,30 @@ npm run report
 # Clean up artifacts and caches
 npm run clean:all
 ```
+
+### ⚠️ Windows Users: Line Ending Configuration
+
+If you're on Windows and encounter ESLint errors about CRLF line endings, configure Git to use LF:
+
+```bash
+# Configure Git to not convert line endings
+git config core.autocrlf false
+
+# Normalize all files in the repository
+git add --renormalize .
+
+# Commit the normalized files
+git commit -m "chore: normalize line endings to LF"
+
+# Push the changes to your fork
+git push origin main
+```
+
+**Why this is needed:**
+
+- PICKL enforces Unix-style line endings (LF) for consistency across platforms
+- `.gitattributes` and `.editorconfig` automatically handle this for new files
+- Existing clones need the above commands to normalize their files
 
 ## 📦 Tech Stack
 

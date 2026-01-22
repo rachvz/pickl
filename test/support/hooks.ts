@@ -139,4 +139,5 @@ After(async function (this: ICustomWorld, { pickle, result }) {
 
 AfterAll(async function () {
   // Global cleanup if needed
+  // TODO cleanup added config: event and expense type
 })

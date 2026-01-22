@@ -2,7 +2,7 @@ import { Locator, Page } from '@playwright/test'
 
 /**
  * Page Object Model for the Login page
- * URL: https://opensource-demo.orangehrmlive.com/
+ * URL: https://the-internet.herokuapp.com/login
  */
 export class LoginPage {
   readonly page: Page
@@ -14,18 +14,18 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page
-    this.usernameInput = page.locator('//input[@placeholder="Username"]')
-    this.passwordInput = page.locator('//input[@placeholder="Password"]')
-    this.loginButton = page.locator('//button[@type="submit"]')
+    this.usernameInput = page.locator('#username')
+    this.passwordInput = page.locator('#password')
+    this.loginButton = page.locator('button[type="submit"]')
     this.flashMessage = page.locator('#flash')
-    this.pageHeading = page.locator('h2')
+    this.pageHeading = page.locator('//header//h6')
   }
 
   /**
    * Navigate to the login page
    */
   async goto() {
-    await this.page.goto('/web/index.php/auth/login')
+    await this.page.goto('/login')
   }
 
   /**
@@ -86,15 +86,6 @@ export class LoginPage {
   async isOnLoginPage(): Promise<boolean> {
     const heading = await this.getPageHeading()
     return heading.includes('Login Page')
-  }
-
-  /**
-   * Check if currently on the expected page after Login
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnPage(pageName: string): Promise<boolean> {
-    const heading = await this.getPageHeading()
-    return heading.includes(pageName)
   }
 
   /**

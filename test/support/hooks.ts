@@ -19,8 +19,11 @@ BeforeAll(async function () {
   const dirs = ['test-results/videos', 'test-results/traces', 'test-results/screenshots']
 
   for (const dir of dirs) {
-    if (!existsSync(dir)) {
+    try {
       await mkdir(dir, { recursive: true })
+    } catch (error) {
+      console.error(`Failed to create directory ${dir}:`, error)
+      throw error
     }
   }
 })
@@ -88,14 +91,25 @@ async function saveVideo(page: Page, world: ICustomWorld): Promise<{ pageClosedE
   }
 
   try {
+    // Close the page first to finalize video recording
     await page.close()
+
+    // Wait for video to be saved and get the path
     const videoPath = await video.path()
+
+    // Check if file exists before trying to read
+    if (!existsSync(videoPath)) {
+      console.error(`Video file does not exist at: ${videoPath}`)
+      return { pageClosedEarly: true }
+    }
+
+    // Read the video file
     const videoBuffer = await readFile(videoPath)
     world.attach(videoBuffer, 'video/webm')
     return { pageClosedEarly: true }
   } catch (error) {
-    console.warn('Failed to attach video:', error)
-    return { pageClosedEarly: false }
+    console.error('Failed to attach video:', error)
+    return { pageClosedEarly: true }
   }
 }
 

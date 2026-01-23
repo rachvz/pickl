@@ -15,7 +15,7 @@ export class LoginPage {
     this.usernameInput = page.locator('//input[@placeholder="Username"]')
     this.passwordInput = page.locator('//input[@placeholder="Password"]')
     this.loginButton = page.locator('//button[@type="submit"]')
-    this.pageHeading = page.locator('h2')
+    this.pageHeading = page.locator('//h6')
   }
 
   /**

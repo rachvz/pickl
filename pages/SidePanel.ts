@@ -10,7 +10,7 @@ export class SidePanel {
 
   constructor(page: Page) {
     this.page = page
-    this.pageHeading = page.locator('h2')
+    this.pageHeading = page.locator('//h6')
   }
 
   /**

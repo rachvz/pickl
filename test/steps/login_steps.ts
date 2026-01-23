@@ -12,8 +12,9 @@ Given('the admin user login to Orangehrm site', async function (this: ICustomWor
   }
 
   const loginPage = new LoginPage(this.page)
-  const username = process.env.USERNAME!
-  const password = process.env.PASSWORD!
+  const username = process.env.ADMIN_USERNAME!
+  const password = process.env.ADMIN_PASSWORD!
+  await loginPage.goto()
   await loginPage.login(username, password)
 
   const isLandingDashboardPage = await loginPage.isOnPage('Dashboard')
@@ -28,12 +29,11 @@ Given(
     }
     // TODO enhance this. validate acceptable module name param
     const sidePanel = new SidePanel(this.page)
-    await sidePanel.clickModule(moduleName.toLowerCase())
-    expect(sidePanel.isOnPage('Claim')).toBeTruthy()
+    await sidePanel.clickModule(moduleName)
   },
 )
 
-Then('the {} page is displayed', function (this: ICustomWorld, moduleName: string) {
+Then('the {string} page is displayed', function (this: ICustomWorld, moduleName: string) {
   if (!this.page) {
     throw new Error('Page is not initialized')
   }

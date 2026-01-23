@@ -1,28 +1,31 @@
 import { Locator, Page } from '@playwright/test'
+
 /**
  * Page Object Model for the Login page
- * URL: https://opensource-demo.orangehrmlive.com/
+ * URL: https://the-internet.herokuapp.com/login
  */
 export class LoginPage {
   readonly page: Page
   readonly usernameInput: Locator
   readonly passwordInput: Locator
   readonly loginButton: Locator
+  readonly flashMessage: Locator
   readonly pageHeading: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.usernameInput = page.locator('//input[@placeholder="Username"]')
-    this.passwordInput = page.locator('//input[@placeholder="Password"]')
-    this.loginButton = page.locator('//button[@type="submit"]')
-    this.pageHeading = page.locator('//h6')
+    this.usernameInput = page.locator('#username')
+    this.passwordInput = page.locator('#password')
+    this.loginButton = page.locator('button[type="submit"]')
+    this.flashMessage = page.locator('#flash')
+    this.pageHeading = page.locator('//header//h6')
   }
 
   /**
    * Navigate to the login page
    */
   async goto() {
-    await this.page.goto('/web/index.php/auth/login')
+    await this.page.goto('/login')
   }
 
   /**
@@ -60,6 +63,15 @@ export class LoginPage {
   }
 
   /**
+   * Get the flash message text (success or error)
+   * @returns The flash message text without the close button
+   */
+  async getFlashMessage(): Promise<string> {
+    const text = await this.flashMessage.textContent()
+    return text?.replace('×', '').trim() ?? ''
+  }
+
+  /**
    * Get the current page heading text
    * @returns The page heading text
    */
@@ -68,11 +80,20 @@ export class LoginPage {
   }
 
   /**
-   * Check if currently on the expected page after Login
-   * @returns True if on the expected page, false otherwise
+   * Check if currently on the login page
+   * @returns True if on login page, false otherwise
    */
-  async isOnPage(pageName: string): Promise<boolean> {
+  async isOnLoginPage(): Promise<boolean> {
     const heading = await this.getPageHeading()
-    return heading.includes(pageName)
+    return heading.includes('Login Page')
+  }
+
+  /**
+   * Check if currently on the secure area page
+   * @returns True if on secure area, false otherwise
+   */
+  async isOnSecureArea(): Promise<boolean> {
+    const heading = await this.getPageHeading()
+    return heading.includes('Secure Area')
   }
 }

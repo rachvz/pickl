@@ -1,5 +1,6 @@
 import { After, AfterAll, Before, BeforeAll, Status, setDefaultTimeout } from '@cucumber/cucumber'
 import { Browser, Page, chromium, firefox, webkit } from '@playwright/test'
+import * as dotenv from 'dotenv'
 import { existsSync } from 'fs'
 import { mkdir, readFile } from 'fs/promises'
 import { ICustomWorld } from './world.js'
@@ -15,6 +16,15 @@ interface PickleInfo {
 let browser: Browser
 
 BeforeAll(async function () {
+  // Loads .env from project root into process.env
+  dotenv.config()
+  // Validate required variables from .env
+  const required = ['BASE_URL', 'ADMIN_USERNAME', 'ADMIN_PASSWORD'] as const
+  const missing = required.filter(k => !process.env[k])
+  if (missing.length) {
+    throw new Error(`Missing required env vars: ${missing.join(', ')}`)
+  }
+
   // Create directories for test artifacts if they don't exist
   const dirs = ['test-results/videos', 'test-results/traces', 'test-results/screenshots']
 
@@ -139,4 +149,5 @@ After(async function (this: ICustomWorld, { pickle, result }) {
 
 AfterAll(async function () {
   // Global cleanup if needed
+  // TODO cleanup added config: event and expense type
 })

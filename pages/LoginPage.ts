@@ -1,5 +1,4 @@
 import { Locator, Page } from '@playwright/test'
-
 /**
  * Page Object Model for the Login page
  * URL: https://opensource-demo.orangehrmlive.com/
@@ -9,7 +8,6 @@ export class LoginPage {
   readonly usernameInput: Locator
   readonly passwordInput: Locator
   readonly loginButton: Locator
-  readonly flashMessage: Locator
   readonly pageHeading: Locator
 
   constructor(page: Page) {
@@ -17,7 +15,6 @@ export class LoginPage {
     this.usernameInput = page.locator('//input[@placeholder="Username"]')
     this.passwordInput = page.locator('//input[@placeholder="Password"]')
     this.loginButton = page.locator('//button[@type="submit"]')
-    this.flashMessage = page.locator('#flash')
     this.pageHeading = page.locator('h2')
   }
 
@@ -63,29 +60,11 @@ export class LoginPage {
   }
 
   /**
-   * Get the flash message text (success or error)
-   * @returns The flash message text without the close button
-   */
-  async getFlashMessage(): Promise<string> {
-    const text = await this.flashMessage.textContent()
-    return text?.replace('×', '').trim() ?? ''
-  }
-
-  /**
    * Get the current page heading text
    * @returns The page heading text
    */
   async getPageHeading(): Promise<string> {
     return (await this.pageHeading.textContent()) ?? ''
-  }
-
-  /**
-   * Check if currently on the login page
-   * @returns True if on login page, false otherwise
-   */
-  async isOnLoginPage(): Promise<boolean> {
-    const heading = await this.getPageHeading()
-    return heading.includes('Login Page')
   }
 
   /**
@@ -95,14 +74,5 @@ export class LoginPage {
   async isOnPage(pageName: string): Promise<boolean> {
     const heading = await this.getPageHeading()
     return heading.includes(pageName)
-  }
-
-  /**
-   * Check if currently on the secure area page
-   * @returns True if on secure area, false otherwise
-   */
-  async isOnSecureArea(): Promise<boolean> {
-    const heading = await this.getPageHeading()
-    return heading.includes('Secure Area')
   }
 }

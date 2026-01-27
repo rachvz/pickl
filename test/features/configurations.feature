@@ -1,5 +1,5 @@
 @configuration
-Feature: Configurations Module
+Feature: Claim Module - Configurations
   As an expense claim team member
   I want to be able to configure event and expense types for claims records
   So that the claim records can be categorized accordingly
@@ -19,5 +19,6 @@ Feature: Configurations Module
     Then the event record is added successfully
 
     Examples:
-      | name | description | isActive |
-      |      |             |          |
+      | name                   | description     | isActive |
+      | Learning & Development | playwright test | True     |
+      | Meals & Allowances     |                 | False    |

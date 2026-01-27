@@ -1,86 +1,42 @@
-import { Given, Then, When } from '@cucumber/cucumber'
-import { expect } from '@playwright/test'
+import { Given, Then } from '@cucumber/cucumber'
+import { expect } from 'playwright/test'
+import { ClaimPage } from '../../pages/ClaimPage.js'
+import { DashboardPage } from '../../pages/DashboardPage.js'
 import { LoginPage } from '../../pages/LoginPage.js'
 import { ICustomWorld } from '../support/world.js'
 
-Given('I am on the login page', async function (this: ICustomWorld) {
+Given('the admin user login to Orangehrm site', async function (this: ICustomWorld) {
   if (!this.page) {
     throw new Error('Page is not initialized')
   }
 
   const loginPage = new LoginPage(this.page)
+  const username = process.env.ADMIN_USERNAME!
+  const password = process.env.ADMIN_PASSWORD!
   await loginPage.goto()
+  await loginPage.login(username, password)
+
+  const isLandingDashboardPage = await loginPage.isOnPage('Dashboard')
+  expect(isLandingDashboardPage).toBeTruthy()
 })
 
-When('I enter username {string}', async function (this: ICustomWorld, username: string) {
+Then('the {string} page is displayed', function (this: ICustomWorld, moduleName: string) {
   if (!this.page) {
     throw new Error('Page is not initialized')
   }
 
-  const loginPage = new LoginPage(this.page)
-  await loginPage.enterUsername(username)
-})
-
-When('I enter password {string}', async function (this: ICustomWorld, password: string) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
-  const loginPage = new LoginPage(this.page)
-  await loginPage.enterPassword(password)
-})
-
-When('I click the login button', async function (this: ICustomWorld) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
-  const loginPage = new LoginPage(this.page)
-  await loginPage.clickLogin()
-})
-
-Then('I should see the secure area page', async function (this: ICustomWorld) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
-  const loginPage = new LoginPage(this.page)
-  const isSecureArea = await loginPage.isOnSecureArea()
-  expect(isSecureArea).toBeTruthy()
-})
-
-Then(
-  'I should see a success message {string}',
-  async function (this: ICustomWorld, expectedMessage: string) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
+  switch (moduleName.toLowerCase()) {
+    case 'dashboard': {
+      const dashboard = new DashboardPage(this.page)
+      expect(dashboard.isOnDashboardPage()).toBeTruthy()
+      break
     }
-
-    const loginPage = new LoginPage(this.page)
-    const flashMessage = await loginPage.getFlashMessage()
-    expect(flashMessage).toContain(expectedMessage)
-  },
-)
-
-Then(
-  'I should see an error message {string}',
-  async function (this: ICustomWorld, expectedMessage: string) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
+    case 'claim': {
+      const claimPage = new ClaimPage(this.page)
+      expect(claimPage.isOnClaimPage()).toBeTruthy()
+      break
     }
-
-    const loginPage = new LoginPage(this.page)
-    const flashMessage = await loginPage.getFlashMessage()
-    expect(flashMessage).toContain(expectedMessage)
-  },
-)
-
-Then('I should remain on the login page', async function (this: ICustomWorld) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
+    default:
+      throw new Error('Module name provided is not handled.')
   }
-
-  const loginPage = new LoginPage(this.page)
-  const isLoginPage = await loginPage.isOnLoginPage()
-  expect(isLoginPage).toBeTruthy()
 })

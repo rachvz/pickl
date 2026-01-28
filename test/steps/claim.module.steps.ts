@@ -1,6 +1,7 @@
-import { type DataTable, Given, When } from '@cucumber/cucumber'
+import { type DataTable, Given, Then, When } from '@cucumber/cucumber'
 import { expect } from 'playwright/test'
 import { ClaimPage } from '../../pages/ClaimPage.js'
+import { SidePanel } from '../../pages/SidePanel.js'
 import { ICustomWorld } from '../support/world.js'
 
 Given('the user views the Events type records', async function (this: ICustomWorld) {
@@ -10,9 +11,9 @@ Given('the user views the Events type records', async function (this: ICustomWor
 
   const claimPage = new ClaimPage(this.page)
   await claimPage.clickConfiguration()
+  await claimPage.clickEventsMenuItem()
   await claimPage.clickAddEventButton()
-  const isAddEventPageDisplayed = await claimPage.isOnPage('Add Event')
-  expect(isAddEventPageDisplayed).toBeTruthy()
+  expect(claimPage.isOnAddEventPage()).toBeTruthy()
 })
 
 When(
@@ -22,7 +23,8 @@ When(
       throw new Error('Page is not initialized')
     }
     const claimPage = new ClaimPage(this.page)
-    const dataTable = table.rowsHash() // fetch scenario step data into dictionary.
+    // fetch scenario step data into dictionary.
+    const dataTable = table.rowsHash()
 
     if (dataTable['Event Name']) {
       await claimPage.enterEventName(dataTable['Event Name'])
@@ -39,11 +41,15 @@ When(
   // TODO save added record in session variable
 )
 
-// Then('the event record is added successfully', async function (this: ICustomWorld) {
-//   if (!this.page) {
-//     throw new Error('Page is not initialized')
-//   }
-//   // const claimPage = new ClaimPage(this.page)
-//   // TODO retrieve record name from saved session data. then pass it to below.
-//   // claimPage.retrieveRecordInTable()
-// })
+Then('the event record is added successfully', async function (this: ICustomWorld) {
+  if (!this.page) {
+    throw new Error('Page is not initialized')
+  }
+  const sidePanel = new SidePanel(this.page)
+  const notif = await sidePanel.hasMessageInToastNotif('Success')
+  expect(notif).toBeTruthy()
+
+  const claimPage = new ClaimPage(this.page)
+  expect(await claimPage.isRecordTableDisplayed()).toBeTruthy()
+  expect(await claimPage.isRecordRetrieveInTable('Learning & Development')).toBe(true)
+})

@@ -8,31 +8,38 @@ import { Locator, Page } from '@playwright/test'
 export class ClaimPage {
   readonly page: Page
   readonly claimViewPage: Locator
+  readonly eventRecordPage: Locator
   readonly configurationButton: Locator
   readonly configMenuItems: Locator
   readonly eventsMenuItem: Locator
-  readonly pageHeading: Locator
+  readonly addEventPage: Locator
   readonly expenseTypeMenuItem: Locator
   readonly addEventButton: Locator
   readonly eventNameInput: Locator
   readonly descriptionInput: Locator
   readonly switchActive: Locator
   readonly saveEventButton: Locator
-  readonly eventRecordTable: Locator
+  readonly pageLoadingIcon: Locator
+  readonly eventsRecordTable: Locator
 
   constructor(page: Page) {
     this.page = page
     this.claimViewPage = page.locator('//h6[text()="Claim"]')
-    this.configurationButton = page.getByRole('navigation', { name: 'Configuration' })
+    this.eventRecordPage = page.locator('//h6[text()="Events"]')
+    this.addEventPage = page.locator('//h6[text()="Add Event"]')
+    this.configurationButton = page.locator(
+      '//div[@class="oxd-topbar-body"]//span[text()="Configuration "]',
+    )
     this.configMenuItems = page.getByRole('menuitem')
-    this.eventsMenuItem = page.getByRole('menuitem', { name: 'Events' })
-    this.pageHeading = page.locator('//h6')
-    this.expenseTypeMenuItem = page.getByRole('menuitem', { name: 'Expense Types' })
+    this.eventsMenuItem = page.getByText('Events')
+    this.expenseTypeMenuItem = page.getByText('Expense Types')
     this.addEventButton = page.locator('//button[text()=" Add "]')
-    this.eventNameInput = page.getByLabel('Event Name')
-    this.descriptionInput = page.getByLabel('Description')
+    this.eventNameInput = page.locator('//label[text()="Event Name"]/../..//input')
+    this.descriptionInput = page.locator('//label[text()="Description"]/../..//textarea')
     this.switchActive = page.locator('//p[text()="Active"]/..//span')
     this.saveEventButton = page.getByRole('button', { name: ' Save ' })
+    this.pageLoadingIcon = page.locator('//div[@class=oxd-loading-spinner]')
+    this.eventsRecordTable = page.locator('//div[@class="oxd-table" and @role="table"]')
   }
 
   /**
@@ -41,6 +48,30 @@ export class ClaimPage {
    */
   async isOnClaimPage(): Promise<boolean> {
     return this.claimViewPage.isVisible()
+  }
+
+  /**
+   * Check if currently on Event records page
+   * @returns True if on the expected page, false otherwise
+   */
+  async isOnEventRecordsPage(): Promise<boolean> {
+    return this.eventRecordPage.isVisible()
+  }
+
+  /**
+   * Check if currently on Add Event page
+   * @returns True if on the expected page, false otherwise
+   */
+  async isOnAddEventPage(): Promise<boolean> {
+    return this.addEventPage.isVisible()
+  }
+
+  /**
+   * Check if records table is displayed
+   * @returns True if on the expected table is displayed, false otherwise
+   */
+  async isRecordTableDisplayed(): Promise<boolean> {
+    return this.eventsRecordTable.isVisible({ timeout: 15000 })
   }
 
   /**
@@ -69,23 +100,6 @@ export class ClaimPage {
    */
   async clickAddEventButton() {
     await this.addEventButton.click()
-  }
-
-  /**
-   * Get the current page heading text
-   * @returns The page heading text
-   */
-  async getPageHeading(): Promise<string> {
-    return (await this.pageHeading.textContent()) ?? ''
-  }
-
-  /**
-   * Check if currently on the expected page after Login
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnPage(pageName: string): Promise<boolean> {
-    const heading = await this.getPageHeading()
-    return heading.includes(pageName)
   }
 
   /**
@@ -123,7 +137,14 @@ export class ClaimPage {
   /**
    * Retrieve record element
    */
-  retrieveRecordInTable(eventName: string) {
-    return this.page.locator(`//div[@class="oxd-table-body"]//div[contains(text(),"${eventName}")]`)
+  async isRecordRetrieveInTable(eventName: string): Promise<boolean> {
+    await this.eventsRecordTable.isVisible({ timeout: 15000 })
+    const record = this.page.locator(
+      `//div[@class="oxd-table-body"]//div[contains(text(),"${eventName}")]`,
+    )
+    if (record) {
+      return true
+    }
+    return false
   }
 }

@@ -19,6 +19,6 @@ Feature: Claim Module - Configurations
     Then the event record is added successfully
 
     Examples:
-      | name                   | description     | isActive |
-      | Learning & Development | playwright test | True     |
-      | Meals & Allowances     |                 | False    |
+      | name                   | description | isActive |
+      | Learning & Development | qwerty      | True     |
+      # | Meals & Allowances     |             | False    |

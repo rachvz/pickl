@@ -21,4 +21,4 @@ Feature: Claim Module - Configurations
     Examples:
       | name                   | description | isActive |
       | Learning & Development | qwerty      | True     |
-      # | Meals & Allowances     |             | False    |
+      | Meals & Allowances     |             | False    |

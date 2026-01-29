@@ -1,4 +1,4 @@
-import { World, IWorldOptions } from '@cucumber/cucumber'
+import { IWorldOptions, World } from '@cucumber/cucumber'
 import { BrowserContext, Page } from '@playwright/test'
 
 /**
@@ -22,6 +22,7 @@ export class CustomWorld extends World implements ICustomWorld {
   page?: Page
   /** Playwright BrowserContext for managing browser state and cookies */
   context?: BrowserContext
+  data: Record<string, unknown>
 
   /**
    * Creates a new CustomWorld instance for a Cucumber scenario.
@@ -29,5 +30,6 @@ export class CustomWorld extends World implements ICustomWorld {
    */
   constructor(options: IWorldOptions) {
     super(options)
+    this.data = {} // per-scenario data storage
   }
 }

@@ -7,14 +7,14 @@ import { Locator, Page } from '@playwright/test'
 export class SidePanel {
   readonly page: Page
   readonly pageHeading: Locator
+  readonly toastNotifTitle: Locator
   readonly toastNotifMessage: Locator
 
   constructor(page: Page) {
     this.page = page
     this.pageHeading = page.locator('//h6')
-    this.toastNotifMessage = page.locator(
-      '//div[starts-with(@class, "oxd-toast-container") and starts-with(@id, "oxd-toaster")]',
-    )
+    this.toastNotifTitle = page.locator('//p[contains(@class, "oxd-text--toast-title")]')
+    this.toastNotifMessage = page.locator('//p[contains(@class, "oxd-text--toast-message")]')
   }
 
   /**
@@ -40,15 +40,5 @@ export class SidePanel {
   async isOnPage(pageName: string): Promise<boolean> {
     const heading = await this.getPageHeading()
     return heading.includes(pageName)
-  }
-
-  /**
-   * Check if currently on the expected page
-   * @returns True if on login page, false otherwise
-   */
-  async hasMessageInToastNotif(message: string): Promise<boolean> {
-    await this.toastNotifMessage.isVisible({ timeout: 15000 })
-    const notifMessage = (await this.toastNotifMessage.textContent()) ?? ''
-    return notifMessage.includes(message)
   }
 }

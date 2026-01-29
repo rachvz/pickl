@@ -20,7 +20,7 @@ export class ClaimPage {
   readonly switchActive: Locator
   readonly saveEventButton: Locator
   readonly pageLoadingIcon: Locator
-  readonly eventsRecordTable: Locator
+  readonly eventsRecordData: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -39,7 +39,7 @@ export class ClaimPage {
     this.switchActive = page.locator('//p[text()="Active"]/..//span')
     this.saveEventButton = page.getByRole('button', { name: ' Save ' })
     this.pageLoadingIcon = page.locator('//div[@class=oxd-loading-spinner]')
-    this.eventsRecordTable = page.locator('//div[@class="oxd-table" and @role="table"]')
+    this.eventsRecordData = page.locator('//div[@class="oxd-table-body"]')
   }
 
   /**
@@ -64,14 +64,6 @@ export class ClaimPage {
    */
   async isOnAddEventPage(): Promise<boolean> {
     return this.addEventPage.isVisible()
-  }
-
-  /**
-   * Check if records table is displayed
-   * @returns True if on the expected table is displayed, false otherwise
-   */
-  async isRecordTableDisplayed(): Promise<boolean> {
-    return this.eventsRecordTable.isVisible({ timeout: 15000 })
   }
 
   /**
@@ -132,19 +124,5 @@ export class ClaimPage {
    */
   async clickSaveEventRecordButton() {
     await this.saveEventButton.click()
-  }
-
-  /**
-   * Retrieve record element
-   */
-  async isRecordRetrieveInTable(eventName: string): Promise<boolean> {
-    await this.eventsRecordTable.isVisible({ timeout: 15000 })
-    const record = this.page.locator(
-      `//div[@class="oxd-table-body"]//div[contains(text(),"${eventName}")]`,
-    )
-    if (record) {
-      return true
-    }
-    return false
   }
 }

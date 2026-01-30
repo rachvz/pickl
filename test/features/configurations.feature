@@ -15,10 +15,10 @@ Feature: Claim Module - Configurations
       | key         | value         |
       | Event Name  | <name>        |
       | Description | <description> |
-      | Active      | <isActive>    |
+      | Is Active   | <isActive>    |
     Then the event record is added successfully
 
     Examples:
       | name                   | description | isActive |
-      | Learning & Development | qwerty      | True     |
-      | Meals & Allowances     |             | False    |
+      | Learning & Development | qwerty      | true     |
+      | Meals & Allowances     |             | false    |

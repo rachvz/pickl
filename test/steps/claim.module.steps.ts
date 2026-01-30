@@ -52,7 +52,7 @@ When(
   },
 )
 
-Then('the event record is added successfully', async function (this: ICustomWorld) {
+Then('the event type record is added successfully', async function (this: ICustomWorld) {
   if (!this.page) {
     throw new Error('Page is not initialized')
   }

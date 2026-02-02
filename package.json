@@ -8,7 +8,7 @@
     "clean:all": "tsx scripts/cleanup.ts",
     "pretest": "npm run validate:env",
     "test": "node scripts/run-test.ts",
-    "test:debug": "tsx --import dotenv/config --enable-source-maps node_modules/@cucumber/cucumber/bin/cucumber.js --import test/support/**/*.ts --import test/steps/**/*.ts --format ./test/support/verbose-formatter.ts",
+    "test:debug": "tsx --import dotenv/config --enable-source-maps node_modules/@cucumber/cucumber/bin/cucumber.js --import test/support/**/*.ts --import test/steps/**/*.ts --format ./test/support/verbose-formatter.ts --format json:test-results/cucumber-report.json",
     "test:chromium": "cross-env BROWSER=chromium npm test",
     "test:firefox": "cross-env BROWSER=firefox npm test",
     "test:webkit": "cross-env BROWSER=webkit npm test",

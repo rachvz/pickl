@@ -65,6 +65,7 @@ PICKL is a modern BDD test automation boilerplate that combines Playwright's pow
 
 ### 📚 Reference
 
+- [Why BDD?](docs/WHY-BDD.md) - Benefits of BDD and Cucumber for teams
 - [Writing Tests](docs/WRITING-TESTS.md) - Gherkin syntax and feature file basics
 - [API Reference](docs/API-REFERENCE.md) - Complete API documentation
 - [Architecture](docs/ARCHITECTURE.md) - Framework patterns and internals

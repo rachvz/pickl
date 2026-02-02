@@ -1,5 +1,6 @@
 import { type DataTable, Given, Then, When } from '@cucumber/cucumber'
 import { expect } from 'playwright/test'
+import { EventRecord } from '../../models/event.record.js'
 import { ClaimPage } from '../../pages/ClaimPage.js'
 import { SidePanel } from '../../pages/SidePanel.js'
 import { ICustomWorld } from '../support/world.js'
@@ -26,11 +27,12 @@ When(
     // fetch scenario step data into dictionary.
     const dataTable = table.rowsHash()
 
-    const newEventRecord = {
+    const newEventRecord: EventRecord = {
       eventName: '',
       description: '',
       isActive: true,
     }
+
     if (dataTable['Event Name']) {
       await claimPage.enterEventName(dataTable['Event Name'])
       newEventRecord.eventName = dataTable['Event Name']
@@ -46,9 +48,8 @@ When(
     }
     await claimPage.clickSaveEventRecordButton()
 
-    // TODO handling session variables
-    // this.data.eventData = newEventRecord
-    // return this.data.eventData
+    // store data to scenario-scope session
+    this.setData('newEventRecord', newEventRecord)
   },
 )
 
@@ -60,11 +61,9 @@ Then('the event type record is added successfully', async function (this: ICusto
   await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 30_000 })
   await expect(sidePanel.toastNotifMessage).toHaveText('Successfully Saved')
 
-  // // TODO handling session variables
-  // const seshData = this.data.eventData
-  // console.warn(seshData)
-
+  // retrieve data from scenario-scope session
+  const sessionData = this.getData<EventRecord>('newEventRecord')
   const claimPage = new ClaimPage(this.page)
   await expect(claimPage.eventsRecordData).toBeVisible({ timeout: 30_000 })
-  expect(claimPage.eventsRecordData.filter({ hasText: 'Learning & Development' }))
+  expect(claimPage.eventsRecordData.filter({ hasText: sessionData?.eventName }))
 })

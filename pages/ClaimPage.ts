@@ -9,6 +9,7 @@ export class ClaimPage {
   readonly page: Page
   readonly claimViewPage: Locator
   readonly eventRecordPage: Locator
+  readonly expenseRecordPage: Locator
   readonly addExpensePage: Locator
   readonly configurationButton: Locator
   readonly configMenuItems: Locator
@@ -31,6 +32,7 @@ export class ClaimPage {
     this.page = page
     this.claimViewPage = page.locator('//h6[text()="Claim"]')
     this.eventRecordPage = page.locator('//h6[text()="Events"]')
+    this.expenseRecordPage = page.locator('//h6[text()="Expense Types"]') //
     this.addEventPage = page.locator('//h6[text()="Add Event"]')
     this.addExpensePage = page.locator('//h6[text()="Add Expense Type"]')
     this.configurationButton = page.locator(
@@ -66,6 +68,14 @@ export class ClaimPage {
    */
   async isOnEventRecordsPage(): Promise<boolean> {
     return this.eventRecordPage.isVisible()
+  }
+
+  /**
+   * Check if currently on Expense records page
+   * @returns True if on the expected page, false otherwise
+   */
+  async isOnExpenseRecordsPage(): Promise<boolean> {
+    return this.expenseRecordPage.isVisible()
   }
 
   /**

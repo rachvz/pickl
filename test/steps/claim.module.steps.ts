@@ -6,7 +6,7 @@ import { SidePanel } from '../../pages/SidePanel.js'
 import { ICustomWorld } from '../support/world.js'
 
 Given(
-  'the user views the {string} records',
+  'the user views the {string} type records',
   async function (this: ICustomWorld, configMenu: string) {
     if (!this.page) {
       throw new Error('Page is not initialized')
@@ -16,15 +16,13 @@ Given(
     await claimPage.clickConfiguration()
 
     switch (configMenu.toLowerCase()) {
-      case 'events type':
+      case 'events':
         await claimPage.clickEventsMenuItem()
-        await claimPage.clickAddButton()
-        expect(claimPage.isOnAddEventPage()).toBeTruthy()
+        expect(claimPage.isOnEventRecordsPage()).toBeTruthy()
         break
-      case 'expense type':
+      case 'expense':
         await claimPage.clickExpenseMenuItem()
-        await claimPage.clickAddButton()
-        expect(claimPage.isOnAddExpenseTypePage()).toBeTruthy()
+        expect(claimPage.isOnExpenseRecordsPage()).toBeTruthy()
         break
       default:
         throw new Error('The record type arg from the scenario step is not defined.')
@@ -33,16 +31,31 @@ Given(
 )
 
 When(
-  'the user adds new event type record with the following details',
-  async function (this: ICustomWorld, table: DataTable) {
+  'the user fills-up the {string} type details for new record with the following',
+  async function (this: ICustomWorld, recordType: string, table: DataTable) {
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
     const claimPage = new ClaimPage(this.page)
+
+    // view Events or Expense record page
+    switch (recordType.toLowerCase()) {
+      case 'events':
+        await claimPage.clickAddButton()
+        expect(claimPage.isOnAddEventPage()).toBeTruthy()
+        break
+      case 'expense':
+        await claimPage.clickAddButton()
+        expect(claimPage.isOnAddExpenseTypePage()).toBeTruthy()
+        break
+      default:
+        throw new Error('The record type arg from the scenario step is not defined.')
+    }
+
     // fetch scenario step data into dictionary.
     const dataTable = table.rowsHash()
 
-    const newEventRecord: ConfigurationRecord = {
+    const tempRecord: ConfigurationRecord = {
       name: '',
       description: '',
       isActive: true,
@@ -50,57 +63,63 @@ When(
 
     if (dataTable['Event Name']) {
       await claimPage.enterEventName(dataTable['Event Name'])
-      newEventRecord.name = dataTable['Event Name']
+      tempRecord.name = dataTable['Event Name']
+    }
+    if (dataTable['Expense Type']) {
+      await claimPage.enterEventName(dataTable['Expense Type'])
+      tempRecord.name = dataTable['Expense Type']
     }
     if (dataTable.Description) {
       await claimPage.enterDescription(dataTable.Description)
-      newEventRecord.description = dataTable.Description
+      tempRecord.description = dataTable.Description
     }
     // clicking the switch Active button only when isActive is false.
-    newEventRecord.isActive = String(dataTable['Is Active']).trim().toLowerCase() === 'true'
+    tempRecord.isActive = String(dataTable['Is Active']).trim().toLowerCase() === 'true'
     if (dataTable['Is Active'] === 'false') {
       await claimPage.setSwitchEventActive()
     }
-    await claimPage.clickSaveConfigRecordButton()
 
     // store data to scenario-scope session
-    this.setData('newEventRecord', newEventRecord)
+    const sessionRecordName =
+      // eslint-disable-next-line no-nested-ternary
+      recordType === 'event'
+        ? 'tempEventRecord'
+        : recordType === 'expense'
+          ? 'tempExpenseRecord'
+          : 'throwable'
+    this.setData(sessionRecordName, tempRecord)
   },
 )
 
 When(
-  'the user adds new expense type record with the following details',
-  async function (this: ICustomWorld, table: DataTable) {
+  'the user save the {string} type details',
+  async function (this: ICustomWorld, configType: string) {
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
+
     const claimPage = new ClaimPage(this.page)
-    // fetch scenario step data into dictionary.
-    const dataTable = table.rowsHash()
+    let recordType = ''
+    let newConfigRecord: ConfigurationRecord
 
-    const newExpenseRecord: ConfigurationRecord = {
-      name: '',
-      description: '',
-      isActive: true,
+    switch (configType.toLowerCase()) {
+      case 'event':
+        recordType = 'newEventRecord'
+        newConfigRecord = this.getData<ConfigurationRecord>('tempEventRecord')!
+        break
+      case 'expense':
+        recordType = 'newExpenseRecord'
+        newConfigRecord = this.getData<ConfigurationRecord>('tempExpenseRecord')!
+        break
+      default:
+        throw new Error('The configuration record type arg from the scenario step is not defined.')
     }
 
-    if (dataTable['Expense Type']) {
-      await claimPage.enterExpenseName(dataTable['Expense Type'])
-      newExpenseRecord.name = dataTable['Expense Type']
-    }
-    if (dataTable.Description) {
-      await claimPage.enterDescription(dataTable.Description)
-      newExpenseRecord.description = dataTable.Description
-    }
-    // clicking the switch Active button only when isActive is false.
-    newExpenseRecord.isActive = String(dataTable['Is Active']).trim().toLowerCase() === 'true'
-    if (dataTable['Is Active'] === 'false') {
-      await claimPage.setSwitchEventActive()
-    }
+    // save the config record
     await claimPage.clickSaveConfigRecordButton()
 
     // store data to scenario-scope session
-    this.setData('newExpenseRecord', newExpenseRecord)
+    this.setData(recordType, newConfigRecord)
   },
 )
 
@@ -124,7 +143,7 @@ Then(
         recordType = 'newExpenseRecord'
         break
       default:
-        throw new Error('The record type arg from the scenario step is not defined.')
+        throw new Error('The configuration record type arg from the scenario step is not defined.')
     }
     const sessionData = this.getData<ConfigurationRecord>(recordType)
     const claimPage = new ClaimPage(this.page)

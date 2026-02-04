@@ -4,7 +4,7 @@ import { Locator, Page } from '@playwright/test'
  * Page Object Model for the Side Panel
  * URL: https://opensource-demo.orangehrmlive.com/
  */
-// TODO enhance. which base page will it extends to. sidepanel?
+// TODO rach : enhance. which base page will it extends to. sidepanel?
 export class ClaimPage {
   readonly page: Page
   readonly claimViewPage: Locator
@@ -77,7 +77,7 @@ export class ClaimPage {
   }
 
   /**
-   * Check if currently on Add Event page
+   * Check if currently on Add Expense page
    * @returns True if on the expected page, false otherwise
    */
   async isOnAddExpenseTypePage(): Promise<boolean> {
@@ -103,13 +103,6 @@ export class ClaimPage {
    */
   async clickExpenseMenuItem() {
     await this.expenseMenuItem.click()
-  }
-
-  /**
-   * Click Expense Type menu from Configuration Nav menu
-   */
-  async clickExpenseTypeMenuItem() {
-    await this.expenseTypeMenuItem.click()
   }
 
   /**

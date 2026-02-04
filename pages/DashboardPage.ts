@@ -16,7 +16,7 @@ export class DashboardPage {
   /**
    * Click the side pane menu to view the module
    */
-  // TODO other way?
+  // TODO rach : other way?
   async clickModule(moduleName: string) {
     const newMenuButton = this.page.locator(`//li//span[text()="${moduleName}"]`)
     await newMenuButton.click()

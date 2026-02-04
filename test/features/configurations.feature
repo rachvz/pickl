@@ -51,10 +51,10 @@ Feature: Claim Module - Configurations
     Then the "expense" type record is added successfully
 
     Examples:
-      | name                                                                                                  | description | isActive |
-      | Online Course Subscription                                                                            | qwerty      | true     |
-      | Training Fee                                                                                          | qwerty      | true     |
-      | Test100CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^ |             | false    |
+      | name                                                                                                 | description | isActive |
+      | Online Course Subscription                                                                           | qwerty      | true     |
+      | Training Fee                                                                                         | qwerty      | true     |
+      | Test100CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$% |             | false    |
 
   Scenario Outline: Validate create a Claim Expense type with invalid inputs
     Given the user views the "Expense type" records

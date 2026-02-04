@@ -8,7 +8,7 @@ Given(
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
-    // TODO enhance this. validate acceptable module name param
+    // TODO rach : enhance this. validate acceptable module name param
     const sidePanel = new SidePanel(this.page)
     await sidePanel.clickModule(moduleName)
   },

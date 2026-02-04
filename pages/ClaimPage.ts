@@ -9,37 +9,47 @@ export class ClaimPage {
   readonly page: Page
   readonly claimViewPage: Locator
   readonly eventRecordPage: Locator
+  readonly addExpensePage: Locator
   readonly configurationButton: Locator
   readonly configMenuItems: Locator
   readonly eventsMenuItem: Locator
+  readonly expenseMenuItem: Locator
   readonly addEventPage: Locator
   readonly expenseTypeMenuItem: Locator
-  readonly addEventButton: Locator
+  readonly addButton: Locator
   readonly eventNameInput: Locator
+  readonly expenseNameInput: Locator
   readonly descriptionInput: Locator
   readonly switchActive: Locator
-  readonly saveEventButton: Locator
+  readonly saveConfigButton: Locator
   readonly pageLoadingIcon: Locator
-  readonly eventsRecordData: Locator
+  readonly configRecordData: Locator
+  readonly inputError: Locator
+  readonly inlineError: Locator
 
   constructor(page: Page) {
     this.page = page
     this.claimViewPage = page.locator('//h6[text()="Claim"]')
     this.eventRecordPage = page.locator('//h6[text()="Events"]')
     this.addEventPage = page.locator('//h6[text()="Add Event"]')
+    this.addExpensePage = page.locator('//h6[text()="Add Expense Type"]')
     this.configurationButton = page.locator(
       '//div[@class="oxd-topbar-body"]//span[text()="Configuration "]',
     )
     this.configMenuItems = page.getByRole('menuitem')
     this.eventsMenuItem = page.getByText('Events')
+    this.expenseMenuItem = page.getByText('Expense Types')
     this.expenseTypeMenuItem = page.getByText('Expense Types')
-    this.addEventButton = page.locator('//button[text()=" Add "]')
+    this.addButton = page.locator('//button[text()=" Add "]')
     this.eventNameInput = page.locator('//label[text()="Event Name"]/../..//input')
+    this.expenseNameInput = page.locator('//label[text()="Name"]/../..//input')
     this.descriptionInput = page.locator('//label[text()="Description"]/../..//textarea')
     this.switchActive = page.locator('//p[text()="Active"]/..//span')
-    this.saveEventButton = page.getByRole('button', { name: ' Save ' })
+    this.saveConfigButton = page.getByRole('button', { name: ' Save ' })
     this.pageLoadingIcon = page.locator('//div[@class=oxd-loading-spinner]')
-    this.eventsRecordData = page.locator('//div[@class="oxd-table-body"]')
+    this.configRecordData = page.locator('//div[@class="oxd-table-body"]')
+    this.inputError = page.locator('oxd-input--error')
+    this.inlineError = page.locator('oxd-input-field-error-message')
   }
 
   /**
@@ -63,7 +73,15 @@ export class ClaimPage {
    * @returns True if on the expected page, false otherwise
    */
   async isOnAddEventPage(): Promise<boolean> {
-    return this.addEventPage.isVisible()
+    return this.addEventPage.isVisible({ timeout: 30_000 })
+  }
+
+  /**
+   * Check if currently on Add Event page
+   * @returns True if on the expected page, false otherwise
+   */
+  async isOnAddExpenseTypePage(): Promise<boolean> {
+    return this.addExpensePage.isVisible({ timeout: 30_000 })
   }
 
   /**
@@ -81,6 +99,13 @@ export class ClaimPage {
   }
 
   /**
+   * Click Expense menu from Configuration Nav menu
+   */
+  async clickExpenseMenuItem() {
+    await this.eventsMenuItem.click()
+  }
+
+  /**
    * Click Expense Type menu from Configuration Nav menu
    */
   async clickExpenseTypeMenuItem() {
@@ -88,10 +113,10 @@ export class ClaimPage {
   }
 
   /**
-   * Click Event button to add new Event record
+   * Click Add button to add a new Event or an Expense record
    */
-  async clickAddEventButton() {
-    await this.addEventButton.click()
+  async clickAddButton() {
+    await this.addButton.click()
   }
 
   /**
@@ -100,6 +125,14 @@ export class ClaimPage {
    */
   async enterEventName(eventName: string) {
     await this.eventNameInput.fill(eventName)
+  }
+
+  /**
+   * Enter name into the Expense Name field
+   * @param expenseName - The name to enter
+   */
+  async enterExpenseName(eventName: string) {
+    await this.expenseNameInput.fill(eventName)
   }
 
   /**
@@ -122,7 +155,7 @@ export class ClaimPage {
   /**
    * Click Save button to create the new Event record
    */
-  async clickSaveEventRecordButton() {
-    await this.saveEventButton.click()
+  async clickSaveConfigRecordButton() {
+    await this.saveConfigButton.click()
   }
 }

@@ -48,8 +48,8 @@ export class ClaimPage {
     this.saveConfigButton = page.getByRole('button', { name: ' Save ' })
     this.pageLoadingIcon = page.locator('//div[@class=oxd-loading-spinner]')
     this.configRecordData = page.locator('//div[@class="oxd-table-body"]')
-    this.inputError = page.locator('oxd-input--error')
-    this.inlineError = page.locator('oxd-input-field-error-message')
+    this.inputError = page.locator('//input[contains(@class, "oxd-input--error")]')
+    this.inlineError = page.locator('//span[contains(@class, "oxd-input-field-error-message")]')
   }
 
   /**
@@ -102,7 +102,7 @@ export class ClaimPage {
    * Click Expense menu from Configuration Nav menu
    */
   async clickExpenseMenuItem() {
-    await this.eventsMenuItem.click()
+    await this.expenseMenuItem.click()
   }
 
   /**

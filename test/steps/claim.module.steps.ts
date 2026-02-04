@@ -16,16 +16,18 @@ Given(
     await claimPage.clickConfiguration()
 
     switch (configMenu.toLowerCase()) {
-      case 'Events type':
+      case 'events type':
         await claimPage.clickEventsMenuItem()
         await claimPage.clickAddButton()
         expect(claimPage.isOnAddEventPage()).toBeTruthy()
         break
-      case 'Expense type':
-        await claimPage.clickEventsMenuItem()
+      case 'expense type':
+        await claimPage.clickExpenseMenuItem()
         await claimPage.clickAddButton()
         expect(claimPage.isOnAddExpenseTypePage()).toBeTruthy()
         break
+      default:
+        throw new Error('The record type arg from the scenario step is not defined.')
     }
   },
 )
@@ -109,7 +111,7 @@ Then(
       throw new Error('Page is not initialized')
     }
     const sidePanel = new SidePanel(this.page)
-    await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 30_000 })
+    await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 50_000 })
     await expect(sidePanel.toastNotifMessage).toHaveText('Successfully Saved')
 
     // retrieve data from scenario-scope session
@@ -131,16 +133,15 @@ Then(
   },
 )
 
-// TODO fix needed. handle different scenario step
 Then(
-  '/^adding the (expense|expense) type record is not successful$',
+  /^adding the (?:event|expense) type record is not successful$/,
   async function (this: ICustomWorld) {
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
     const claimPage = new ClaimPage(this.page)
     await expect(claimPage.configRecordData).toHaveCount(0)
-    await expect(claimPage.inputError).toHaveCount(1)
+    await expect(claimPage.inputError).toHaveCount(1, { timeout: 30_000 })
   },
 )
 

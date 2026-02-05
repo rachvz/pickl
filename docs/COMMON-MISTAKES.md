@@ -141,7 +141,7 @@ When('I fill the login form', async function (this: ICustomWorld) {
 
 ### Mistake #5: Not checking page initialization
 
-**❌ Wrong:**
+**❌ Wrong (No validation):**
 
 ```typescript
 Given('I am on the login page', async function (this: ICustomWorld) {
@@ -150,7 +150,7 @@ Given('I am on the login page', async function (this: ICustomWorld) {
 })
 ```
 
-**✅ Correct:**
+**⚠️ Old Pattern (Verbose):**
 
 ```typescript
 Given('I am on the login page', async function (this: ICustomWorld) {
@@ -162,26 +162,36 @@ Given('I am on the login page', async function (this: ICustomWorld) {
 })
 ```
 
-**Better (with helper):**
+**✅ Best: Use `getPageObject()` helper (Issue #123):**
 
 ```typescript
-// test/support/step-helpers.ts
-export function getPage(world: ICustomWorld): Page {
-  if (!world.page) {
-    throw new Error('Page is not initialized. Ensure Before hook has run.')
-  }
-  return world.page
-}
+import { getPageObject } from '../support/step-helpers.js'
 
-// In step definition
 Given('I am on the login page', async function (this: ICustomWorld) {
-  const page = getPage(this)
-  const loginPage = new LoginPage(page)
+  const loginPage = getPageObject(this, LoginPage)
   await loginPage.goto()
 })
 ```
 
-**Why it matters**: If the Before hook hasn't run or failed, `this.page` will be undefined, causing cryptic errors.
+**Why this is best:**
+
+- ✅ Eliminates boilerplate (reduces 9 lines to 3 lines)
+- ✅ Type-safe page object instantiation
+- ✅ Clear error messages if page is not initialized
+- ✅ Consistent pattern across all step definitions
+
+**Alternative: Use `getPage()` for direct page access:**
+
+```typescript
+import { getPage } from '../support/step-helpers.js'
+
+When('I wait {int} milliseconds', async function (this: ICustomWorld, ms: number) {
+  const page = getPage(this)
+  await page.waitForTimeout(ms)
+})
+```
+
+**Why it matters**: If the Before hook hasn't run or failed, `this.page` will be undefined, causing cryptic errors. The helpers catch this early with clear error messages.
 
 **If you see errors**: For the error "Cannot read properties of undefined", see [Troubleshooting - Step Definition Errors](TROUBLESHOOTING.md#step-definition-errors).
 
@@ -204,8 +214,7 @@ Given('I am on the login page', async function (this: ICustomWorld) {
 
 ```typescript
 Given('I am on the login page', async function (this: ICustomWorld) {
-  const page = getPage(this)
-  const loginPage = new LoginPage(page) // Create fresh instance
+  const loginPage = getPageObject(this, LoginPage) // Create fresh instance
   await loginPage.goto()
 })
 ```

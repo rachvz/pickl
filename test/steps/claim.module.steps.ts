@@ -19,11 +19,11 @@ Given(
     switch (configMenu.toLowerCase()) {
       case 'events':
         await claimPage.clickEventsMenuItem()
-        expect(claimPage.isOnEventRecordsPage()).toBeTruthy()
+        await expect(claimPage.eventRecordPage).toBeVisible()
         break
       case 'expense':
         await claimPage.clickExpenseMenuItem()
-        expect(claimPage.isOnExpenseRecordsPage()).toBeTruthy()
+        await expect(claimPage.expenseRecordPage).toBeVisible()
         break
       default:
         throw new Error('The record type arg from the scenario step is not defined.')
@@ -45,12 +45,12 @@ When(
     switch (recordType.toLowerCase()) {
       case 'event':
         await claimPage.clickAddButton()
-        expect(claimPage.isOnAddEventPage()).toBeTruthy()
+        await expect(claimPage.addEventPage).toBeVisible()
         sessionRecordName = 'tempEventRecord'
         break
       case 'expense':
         await claimPage.clickAddButton()
-        expect(claimPage.isOnAddExpenseTypePage()).toBeTruthy()
+        await expect(claimPage.addExpensePage).toBeVisible()
         sessionRecordName = 'tempExpenseRecord'
         break
       default:

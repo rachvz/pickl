@@ -16,7 +16,6 @@ export class ClaimPage {
   readonly eventsMenuItem: Locator
   readonly expenseMenuItem: Locator
   readonly addEventPage: Locator
-  readonly expenseTypeMenuItem: Locator
   readonly addButton: Locator
   readonly eventNameInput: Locator
   readonly expenseNameInput: Locator
@@ -32,7 +31,7 @@ export class ClaimPage {
     this.page = page
     this.claimViewPage = page.locator('//h6[text()="Claim"]')
     this.eventRecordPage = page.locator('//h6[text()="Events"]')
-    this.expenseRecordPage = page.locator('//h6[text()="Expense Types"]') //
+    this.expenseRecordPage = page.locator('//h6[text()="Expense Types"]')
     this.addEventPage = page.locator('//h6[text()="Add Event"]')
     this.addExpensePage = page.locator('//h6[text()="Add Expense Type"]')
     this.configurationButton = page.locator(
@@ -41,7 +40,6 @@ export class ClaimPage {
     this.configMenuItems = page.getByRole('menuitem')
     this.eventsMenuItem = page.getByText('Events')
     this.expenseMenuItem = page.getByText('Expense Types')
-    this.expenseTypeMenuItem = page.getByText('Expense Types')
     this.addButton = page.locator('//button[text()=" Add "]')
     this.eventNameInput = page.locator('//label[text()="Event Name"]/../..//input')
     this.expenseNameInput = page.locator('//label[text()="Name"]/../..//input')
@@ -63,35 +61,11 @@ export class ClaimPage {
   }
 
   /**
-   * Check if currently on Event records page
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnEventRecordsPage(): Promise<boolean> {
-    return this.eventRecordPage.isVisible()
-  }
-
-  /**
    * Check if currently on Expense records page
    * @returns True if on the expected page, false otherwise
    */
   async isOnExpenseRecordsPage(): Promise<boolean> {
     return this.expenseRecordPage.isVisible()
-  }
-
-  /**
-   * Check if currently on Add Event page
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnAddEventPage(): Promise<boolean> {
-    return this.addEventPage.isVisible({ timeout: 30_000 })
-  }
-
-  /**
-   * Check if currently on Add Expense page
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnAddExpenseTypePage(): Promise<boolean> {
-    return this.addExpensePage.isVisible({ timeout: 30_000 })
   }
 
   /**

@@ -12,6 +12,7 @@ Given(
       throw new Error('Page is not initialized')
     }
 
+    // view Events or add Expense record page
     const claimPage = new ClaimPage(this.page)
     await claimPage.clickConfiguration()
 
@@ -36,17 +37,21 @@ When(
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
+
     const claimPage = new ClaimPage(this.page)
 
-    // view Events or Expense record page
+    // view add Events or add Expense record page
+    let sessionRecordName
     switch (recordType.toLowerCase()) {
-      case 'events':
+      case 'event':
         await claimPage.clickAddButton()
         expect(claimPage.isOnAddEventPage()).toBeTruthy()
+        sessionRecordName = 'tempEventRecord'
         break
       case 'expense':
         await claimPage.clickAddButton()
         expect(claimPage.isOnAddExpenseTypePage()).toBeTruthy()
+        sessionRecordName = 'tempExpenseRecord'
         break
       default:
         throw new Error('The record type arg from the scenario step is not defined.')
@@ -66,49 +71,42 @@ When(
       tempRecord.name = dataTable['Event Name']
     }
     if (dataTable['Expense Type']) {
-      await claimPage.enterEventName(dataTable['Expense Type'])
+      await claimPage.enterExpenseName(dataTable['Expense Type'])
       tempRecord.name = dataTable['Expense Type']
     }
     if (dataTable.Description) {
       await claimPage.enterDescription(dataTable.Description)
       tempRecord.description = dataTable.Description
     }
-    // clicking the switch Active button only when isActive is false.
+    // clicking the switch Active button only when isActive false.
     tempRecord.isActive = String(dataTable['Is Active']).trim().toLowerCase() === 'true'
     if (dataTable['Is Active'] === 'false') {
       await claimPage.setSwitchEventActive()
     }
 
-    // store data to scenario-scope session
-    const sessionRecordName =
-      // eslint-disable-next-line no-nested-ternary
-      recordType === 'event'
-        ? 'tempEventRecord'
-        : recordType === 'expense'
-          ? 'tempExpenseRecord'
-          : 'throwable'
+    // store temporary data to scenario-scope session
     this.setData(sessionRecordName, tempRecord)
   },
 )
 
 When(
   'the user save the {string} type details',
-  async function (this: ICustomWorld, configType: string) {
+  async function (this: ICustomWorld, recordType: string) {
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
 
     const claimPage = new ClaimPage(this.page)
-    let recordType = ''
+    let sessionRecordName = ''
     let newConfigRecord: ConfigurationRecord
 
-    switch (configType.toLowerCase()) {
+    switch (recordType.toLowerCase()) {
       case 'event':
-        recordType = 'newEventRecord'
+        sessionRecordName = 'newEventRecord'
         newConfigRecord = this.getData<ConfigurationRecord>('tempEventRecord')!
         break
       case 'expense':
-        recordType = 'newExpenseRecord'
+        sessionRecordName = 'newExpenseRecord'
         newConfigRecord = this.getData<ConfigurationRecord>('tempExpenseRecord')!
         break
       default:
@@ -119,13 +117,13 @@ When(
     await claimPage.clickSaveConfigRecordButton()
 
     // store data to scenario-scope session
-    this.setData(recordType, newConfigRecord)
+    this.setData(sessionRecordName, newConfigRecord)
   },
 )
 
 Then(
   'the {string} type record is added successfully',
-  async function (this: ICustomWorld, configType: string) {
+  async function (this: ICustomWorld, recordType: string) {
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
@@ -134,18 +132,19 @@ Then(
     await expect(sidePanel.toastNotifMessage).toHaveText('Successfully Saved')
 
     // retrieve data from scenario-scope session
-    let recordType = ''
-    switch (configType.toLowerCase()) {
+    let sessionRecordName = ''
+    switch (recordType.toLowerCase()) {
       case 'event':
-        recordType = 'newEventRecord'
+        sessionRecordName = 'newEventRecord'
         break
       case 'expense':
-        recordType = 'newExpenseRecord'
+        sessionRecordName = 'newExpenseRecord'
         break
       default:
         throw new Error('The configuration record type arg from the scenario step is not defined.')
     }
-    const sessionData = this.getData<ConfigurationRecord>(recordType)
+    const sessionData = this.getData<ConfigurationRecord>(sessionRecordName)
+
     const claimPage = new ClaimPage(this.page)
     await expect(claimPage.configRecordData).toBeVisible({ timeout: 30_000 })
     expect(claimPage.configRecordData.filter({ hasText: sessionData?.name }))
@@ -158,6 +157,7 @@ Then(
     if (!this.page) {
       throw new Error('Page is not initialized')
     }
+
     const claimPage = new ClaimPage(this.page)
     await expect(claimPage.configRecordData).toHaveCount(0)
     await expect(claimPage.inputError).toHaveCount(1, { timeout: 30_000 })

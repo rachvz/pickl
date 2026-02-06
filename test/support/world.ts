@@ -1,4 +1,4 @@
-import { World, IWorldOptions } from '@cucumber/cucumber'
+import { IWorldOptions, World, setWorldConstructor } from '@cucumber/cucumber'
 import { BrowserContext, Page } from '@playwright/test'
 
 /**
@@ -10,6 +10,14 @@ export interface ICustomWorld extends World {
   page?: Page
   /** Playwright BrowserContext for managing browser state and cookies */
   context?: BrowserContext
+  /** Scenario-scoped data session */
+  dataSession: Map<string, unknown>
+
+  // Convenience helpers
+  setData<T = unknown>(key: string, value: T): void
+  getData<T = unknown>(key: string): T | undefined
+  hasData(key: string): boolean
+  clearData(): void
 }
 
 /**
@@ -23,6 +31,9 @@ export class CustomWorld extends World implements ICustomWorld {
   /** Playwright BrowserContext for managing browser state and cookies */
   context?: BrowserContext
 
+  /** One fresh storing of data per scenario */
+  dataSession = new Map<string, unknown>()
+
   /**
    * Creates a new CustomWorld instance for a Cucumber scenario.
    * @param options - World options provided by Cucumber, including parameters from cucumber.js
@@ -30,4 +41,22 @@ export class CustomWorld extends World implements ICustomWorld {
   constructor(options: IWorldOptions) {
     super(options)
   }
+
+  setData<T = unknown>(key: string, value: T): void {
+    this.dataSession.set(key, value)
+  }
+
+  getData<T = unknown>(key: string): T | undefined {
+    return this.dataSession.get(key) as T | undefined
+  }
+
+  hasData(key: string): boolean {
+    return this.dataSession.has(key)
+  }
+
+  clearData(): void {
+    this.dataSession.clear()
+  }
 }
+
+setWorldConstructor(CustomWorld)

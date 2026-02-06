@@ -42,6 +42,7 @@
     "fixtures/**/*",
     "scripts/**/*",
     "types/**/*",
+    "models/**/*",
     "*.ts",
     "eslint.config.js"
   ],

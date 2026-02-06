@@ -7,10 +7,14 @@ import { Locator, Page } from '@playwright/test'
 export class SidePanel {
   readonly page: Page
   readonly pageHeading: Locator
+  readonly toastNotifTitle: Locator
+  readonly toastNotifMessage: Locator
 
   constructor(page: Page) {
     this.page = page
     this.pageHeading = page.locator('//h6')
+    this.toastNotifTitle = page.locator('//p[contains(@class, "oxd-text--toast-title")]')
+    this.toastNotifMessage = page.locator('//p[contains(@class, "oxd-text--toast-message")]')
   }
 
   /**

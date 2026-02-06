@@ -175,3 +175,26 @@ Then('an inline message is displayed', async function (this: ICustomWorld, table
   const validationMsg: string = dataTable.message!
   await expect(claimPage.inlineError).toHaveText(validationMsg)
 })
+
+Given(
+  'the following event types are available',
+  async function (this: ICustomWorld, table: DataTable) {
+    if (!this.page) {
+      throw new Error('Page is not initialized')
+    }
+    // view expense records
+    // check for expense record in table if exist
+    // if not, follow the add event steps
+
+    // fetch scenario step data into dictionary.
+    const dataTable = table.rowsHash()
+    const claimPage = new ClaimPage(this.page)
+    const eventNameIsPresent = expect(
+      claimPage.configRecordData.filter({ hasText: dataTable['Event Type'] }),
+    )
+
+    if (!eventNameIsPresent) {
+      await claimPage.addNewEventTypeRecord()
+    }
+  },
+)

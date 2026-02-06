@@ -135,4 +135,16 @@ export class ClaimPage {
   async clickSaveConfigRecordButton() {
     await this.saveConfigButton.click()
   }
+
+  /**
+   * Add the Event Type record steps from Events Record page table list display.
+   */
+  async addNewEventTypeRecord() {
+    // click add button
+    await this.addButton.click()
+    // TODO. work in progress
+    // enter event name
+    // skip description
+    // click save button
+  }
 }

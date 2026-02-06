@@ -36,7 +36,7 @@ export class CustomWorld extends World implements ICustomWorld {
   /** Playwright BrowserContext for managing browser state and cookies */
   context?: BrowserContext
 
-  /** One fresh storing of data per scenario */
+  /** One fresh storing of data per scenario. Though, this is freshly created every scenario run.*/
   dataSession = new Map<string, unknown>()
 
   /**
@@ -90,18 +90,30 @@ export class CustomWorld extends World implements ICustomWorld {
     return new PageClass(page)
   }
 
+  /**
+   * This will store your data in session during run.
+   */
   setData<T = unknown>(key: string, value: T): void {
     this.dataSession.set(key, value)
   }
 
+  /**
+   * This will retrieve the data saved during session run.
+   */
   getData<T = unknown>(key: string): T | undefined {
     return this.dataSession.get(key) as T | undefined
   }
 
+  /**
+   * This checks if the data is the session run.
+   */
   hasData(key: string): boolean {
     return this.dataSession.has(key)
   }
 
+  /**
+   * This clears all data in session. This can also be used mid-scenario.
+   */
   clearData(): void {
     this.dataSession.clear()
   }
@@ -125,5 +137,3 @@ if (!globalThis._cucumberCustomWorldRegistered) {
   setWorldConstructor(CustomWorld)
   globalThis._cucumberCustomWorldRegistered = true
 }
-
-setWorldConstructor(CustomWorld)

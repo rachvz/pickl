@@ -14,6 +14,15 @@ export interface ICustomWorld extends World {
   getPage(): Page
   /** Get a page object instance with automatic page injection */
   getPageObject<T>(PageClass: new (page: Page) => T): T
+
+  /** Scenario-scoped data session */
+  dataSession: Map<string, unknown>
+
+  // Convenience helpers
+  setData<T = unknown>(key: string, value: T): void
+  getData<T = unknown>(key: string): T | undefined
+  hasData(key: string): boolean
+  clearData(): void
 }
 
 /**
@@ -26,6 +35,9 @@ export class CustomWorld extends World implements ICustomWorld {
   page?: Page
   /** Playwright BrowserContext for managing browser state and cookies */
   context?: BrowserContext
+
+  /** One fresh storing of data per scenario */
+  dataSession = new Map<string, unknown>()
 
   /**
    * Creates a new CustomWorld instance for a Cucumber scenario.
@@ -77,6 +89,22 @@ export class CustomWorld extends World implements ICustomWorld {
     const page = this.getPage()
     return new PageClass(page)
   }
+
+  setData<T = unknown>(key: string, value: T): void {
+    this.dataSession.set(key, value)
+  }
+
+  getData<T = unknown>(key: string): T | undefined {
+    return this.dataSession.get(key) as T | undefined
+  }
+
+  hasData(key: string): boolean {
+    return this.dataSession.has(key)
+  }
+
+  clearData(): void {
+    this.dataSession.clear()
+  }
 }
 
 /**
@@ -97,3 +125,5 @@ if (!globalThis._cucumberCustomWorldRegistered) {
   setWorldConstructor(CustomWorld)
   globalThis._cucumberCustomWorldRegistered = true
 }
+
+setWorldConstructor(CustomWorld)

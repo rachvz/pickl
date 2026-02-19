@@ -9,6 +9,7 @@ Feature: Claim Module - Configurations
     And the user views the "Claim" Module
     Then the "Claim" page is displayed
 
+  @smoke
   Scenario Outline: Validate create a Claim Event type with valid inputs
     Given the user views the "Events" type records
     When the user fills-up the "event" type details for new record with the following
@@ -58,6 +59,7 @@ Feature: Claim Module - Configurations
       | key     | value          |
       | message | Already exists |
 
+  @smoke
   Scenario Outline: Validate create a Claim Expense type with valid inputs
     Given the user views the "Expense" type records
     When the user fills-up the "expense" type details for new record with the following

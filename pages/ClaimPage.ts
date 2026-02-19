@@ -29,11 +29,11 @@ export class ClaimPage {
 
   constructor(page: Page) {
     this.page = page
-    this.claimViewPage = page.locator('//h6[text()="Claim"]')
-    this.eventRecordPage = page.locator('//h6[text()="Events"]')
-    this.expenseRecordPage = page.locator('//h6[text()="Expense Types"]')
-    this.addEventPage = page.locator('//h6[text()="Add Event"]')
-    this.addExpensePage = page.locator('//h6[text()="Add Expense Type"]')
+    this.claimViewPage = page.getByRole('heading', { name: 'Claim', exact: true })
+    this.eventRecordPage = page.getByRole('heading', { name: 'Events', exact: true })
+    this.expenseRecordPage = page.getByRole('heading', { name: 'Expense Types', exact: true })
+    this.addEventPage = page.getByRole('heading', { name: 'Add Event', exact: true })
+    this.addExpensePage = page.getByRole('heading', { name: 'Add Expense Type', exact: true })
     this.configurationButton = page.locator(
       '//div[@class="oxd-topbar-body"]//span[text()="Configuration "]',
     )

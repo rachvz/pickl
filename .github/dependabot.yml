@@ -22,6 +22,7 @@ updates:
       eslint-stack:
         patterns:
           - 'eslint'
+          - '@eslint/js'
           - '@typescript-eslint/*'
           - 'typescript-eslint'
 

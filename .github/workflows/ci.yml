@@ -270,8 +270,6 @@ jobs:
         id: coverage-test
         run: npm run test:coverage
         continue-on-error: true
-        env:
-          BASE_URL: ${{ env.BASE_URL }}
 
       - name: Verify only expected test failed
         run: |
@@ -560,7 +558,6 @@ jobs:
         run: npm test
         continue-on-error: true # External test site may be unreachable
         env:
-          BASE_URL: ${{ env.BASE_URL }}
           TAGS: not @skip
 
       - name: Generate HTML report

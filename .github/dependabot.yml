@@ -18,6 +18,12 @@ updates:
       - 'jedau'
     assignees:
       - 'jedau'
+    groups:
+      eslint-stack:
+        patterns:
+          - 'eslint'
+          - '@typescript-eslint/*'
+          - 'typescript-eslint'
 
   # Enable security updates for GitHub Actions
   - package-ecosystem: 'github-actions'

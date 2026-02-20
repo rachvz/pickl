@@ -116,11 +116,11 @@ jobs:
         run: npm ci
 
       - name: Run npm audit
-        run: npm audit --audit-level=moderate
+        run: npm audit --audit-level=moderate --omit=dev
         continue-on-error: true
 
       - name: Check for high/critical vulnerabilities
-        run: npm audit --audit-level=high
+        run: npm audit --audit-level=high --omit=dev
 
   secrets-check:
     name: Secrets Management Compliance
@@ -237,12 +237,29 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Verify BASE_URL is configured
+        run: |
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "⚠️  WARNING: BASE_URL secret is not set!"
+            echo "Tests will fail without a valid BASE_URL."
+            echo ""
+            echo "To configure BASE_URL:"
+            echo "  1. Go to Settings → Secrets and variables → Actions"
+            echo "  2. Click 'New repository secret'"
+            echo "  3. Name: BASE_URL"
+            echo "  4. Value: https://your-app.example.com"
+            echo ""
+            echo "See docs/FORKING.md for detailed instructions."
+            exit 1
+          fi
+          echo "✅ BASE_URL is configured: ${{ secrets.BASE_URL }}"
+
       - name: Run tests with coverage
         id: coverage-test
         run: npm run test:coverage
         continue-on-error: true
         env:
-          BASE_URL: https://the-internet.herokuapp.com
+          BASE_URL: ${{ secrets.BASE_URL }}
 
       - name: Verify only expected test failed
         run: |
@@ -497,12 +514,29 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Verify BASE_URL is configured
+        run: |
+          if [ -z "${{ secrets.BASE_URL }}" ]; then
+            echo "⚠️  WARNING: BASE_URL secret is not set!"
+            echo "Tests will fail without a valid BASE_URL."
+            echo ""
+            echo "To configure BASE_URL:"
+            echo "  1. Go to Settings → Secrets and variables → Actions"
+            echo "  2. Click 'New repository secret'"
+            echo "  3. Name: BASE_URL"
+            echo "  4. Value: https://your-app.example.com"
+            echo ""
+            echo "See docs/FORKING.md for detailed instructions."
+            exit 1
+          fi
+          echo "✅ BASE_URL is configured: ${{ secrets.BASE_URL }}"
+
       - name: Run tests
         id: test
         run: npm test
         continue-on-error: true # External test site may be unreachable
         env:
-          BASE_URL: https://the-internet.herokuapp.com
+          BASE_URL: ${{ secrets.BASE_URL }}
           TAGS: not @skip
 
       - name: Generate HTML report

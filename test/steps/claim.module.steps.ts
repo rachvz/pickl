@@ -1,4 +1,5 @@
 import { type DataTable, Given, Then, When } from '@cucumber/cucumber'
+import { faker } from '@faker-js/faker'
 import { expect } from 'playwright/test'
 import { ConfigurationRecord } from '../../models/configurations.js'
 import { ClaimPage } from '../../pages/ClaimPage.js'
@@ -74,9 +75,14 @@ When(
       await claimPage.enterExpenseName(dataTable['Expense Type'])
       tempRecord.name = dataTable['Expense Type']
     }
+    // description is an optional field. populated by default.
     if (dataTable.Description) {
       await claimPage.enterDescription(dataTable.Description)
       tempRecord.description = dataTable.Description
+    } else {
+      const desc_input = faker.lorem.words(5)
+      await claimPage.enterDescription(desc_input)
+      tempRecord.description = desc_input
     }
     // clicking the switch Active button only when isActive false.
     tempRecord.isActive = String(dataTable['Is Active']).trim().toLowerCase() === 'true'

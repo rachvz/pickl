@@ -9,18 +9,14 @@ import { ICustomWorld } from '../support/world.js'
 Given(
   'the user views the {string} type records',
   async function (this: ICustomWorld, configMenu: string) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
-    }
-
     // view Events or add Expense record page
-    const claimPage = new ClaimPage(this.page)
+    const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
     await claimPage.clickConfiguration()
 
     switch (configMenu.toLowerCase()) {
       case 'events':
         await claimPage.clickEventsMenuItem()
-        await expect(claimPage.eventRecordPage).toBeVisible()
+        await expect(claimPage.eventRecordPage).toBeVisible({ timeout: 50_000 })
         break
       case 'expense':
         await claimPage.clickExpenseMenuItem()
@@ -35,11 +31,7 @@ Given(
 When(
   'the user fills-up the {string} type details for new record with the following',
   async function (this: ICustomWorld, recordType: string, table: DataTable) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
-    }
-
-    const claimPage = new ClaimPage(this.page)
+    const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
 
     // view add Events or add Expense record page
     let sessionRecordName
@@ -98,12 +90,8 @@ When(
 When(
   'the user save the {string} type details',
   async function (this: ICustomWorld, recordType: string) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
-    }
-
-    const claimPage = new ClaimPage(this.page)
-    let sessionRecordName = ''
+    const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
+    let sessionRecordName
     let newConfigRecord: ConfigurationRecord
 
     switch (recordType.toLowerCase()) {
@@ -130,15 +118,12 @@ When(
 Then(
   'the {string} type record is added successfully',
   async function (this: ICustomWorld, recordType: string) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
-    }
-    const sidePanel = new SidePanel(this.page)
+    const sidePanel = this.getPageObject<SidePanel>(SidePanel)
     await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 50_000 })
     await expect(sidePanel.toastNotifMessage).toHaveText('Successfully Saved')
 
     // retrieve data from scenario-scope session
-    let sessionRecordName = ''
+    let sessionRecordName
     switch (recordType.toLowerCase()) {
       case 'event':
         sessionRecordName = 'newEventRecord'
@@ -151,7 +136,7 @@ Then(
     }
     const sessionData = this.getData<ConfigurationRecord>(sessionRecordName)
 
-    const claimPage = new ClaimPage(this.page)
+    const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
     await expect(claimPage.configRecordData).toBeVisible({ timeout: 30_000 })
     expect(claimPage.configRecordData.filter({ hasText: sessionData?.name }))
   },
@@ -160,21 +145,14 @@ Then(
 Then(
   /^adding the (?:event|expense) type record is not successful$/,
   async function (this: ICustomWorld) {
-    if (!this.page) {
-      throw new Error('Page is not initialized')
-    }
-
-    const claimPage = new ClaimPage(this.page)
+    const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
     await expect(claimPage.configRecordData).toHaveCount(0)
     await expect(claimPage.inputError).toHaveCount(1, { timeout: 30_000 })
   },
 )
 
 Then('an inline message is displayed', async function (this: ICustomWorld, table: DataTable) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-  const claimPage = new ClaimPage(this.page)
+  const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
   // fetch scenario step data into dictionary.
   const dataTable = table.rowsHash()
 

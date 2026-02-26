@@ -6,11 +6,7 @@ import { LoginPage } from '../../pages/LoginPage.js'
 import { ICustomWorld } from '../support/world.js'
 
 Given('the admin user login to Orangehrm site', async function (this: ICustomWorld) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
-  const loginPage = new LoginPage(this.page)
+  const loginPage = this.getPageObject<LoginPage>(LoginPage)
   const username = process.env.ADMIN_USERNAME!
   const password = process.env.ADMIN_PASSWORD!
   await loginPage.goto()
@@ -21,18 +17,14 @@ Given('the admin user login to Orangehrm site', async function (this: ICustomWor
 })
 
 Then('the {string} page is displayed', function (this: ICustomWorld, moduleName: string) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
   switch (moduleName.toLowerCase()) {
     case 'dashboard': {
-      const dashboard = new DashboardPage(this.page)
+      const dashboard = this.getPageObject<DashboardPage>(DashboardPage)
       expect(dashboard.isOnDashboardPage()).toBeTruthy()
       break
     }
     case 'claim': {
-      const claimPage = new ClaimPage(this.page)
+      const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
       expect(claimPage.isOnClaimPage()).toBeTruthy()
       break
     }

@@ -12,23 +12,24 @@ Given('the admin user login to Orangehrm site', async function (this: ICustomWor
   await loginPage.goto()
   await loginPage.login(username, password)
 
-  const isLandingDashboardPage = await loginPage.isOnPage('Dashboard')
-  expect(isLandingDashboardPage).toBeTruthy()
+  const dashboardPage = this.getPageObject<DashboardPage>(DashboardPage)
+  await expect(dashboardPage.dashboardViewPage).toBeVisible({ timeout: 30_000 })
 })
 
-Then('the {string} page is displayed', function (this: ICustomWorld, moduleName: string) {
+Then('the {string} page is displayed', async function (this: ICustomWorld, moduleName: string) {
   switch (moduleName.toLowerCase()) {
     case 'dashboard': {
-      const dashboard = this.getPageObject<DashboardPage>(DashboardPage)
-      expect(dashboard.isOnDashboardPage()).toBeTruthy()
+      const dashboardPage = this.getPageObject<DashboardPage>(DashboardPage)
+      await expect(dashboardPage.dashboardViewPage).toBeVisible({ timeout: 30_000 })
       break
     }
     case 'claim': {
       const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
-      expect(claimPage.isOnClaimPage()).toBeTruthy()
+      await expect(claimPage.claimViewPage).toBeVisible({ timeout: 30_000 })
       break
     }
-    default:
-      throw new Error('Module name provided is not handled.')
+    default: {
+      throw new Error('The module name provided is not yet handled.')
+    }
   }
 })

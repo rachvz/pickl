@@ -11,12 +11,12 @@ Given(
   async function (this: ICustomWorld, configMenu: string) {
     // view Events or add Expense record page
     const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
-    await claimPage.clickConfiguration()
+    await claimPage.clickConfigurationMenu()
 
     switch (configMenu.toLowerCase()) {
       case 'events':
         await claimPage.clickEventsMenuItem()
-        await expect(claimPage.eventRecordPage).toBeVisible({ timeout: 50_000 })
+        await expect(claimPage.eventRecordPage).toBeVisible({ timeout: 30_000 })
         break
       case 'expense':
         await claimPage.clickExpenseMenuItem()
@@ -32,17 +32,16 @@ When(
   'the user fills-up the {string} type details for new record with the following',
   async function (this: ICustomWorld, recordType: string, table: DataTable) {
     const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
+    await claimPage.clickAddButton()
 
     // view add Events or add Expense record page
     let sessionRecordName
     switch (recordType.toLowerCase()) {
       case 'event':
-        await claimPage.clickAddButton()
         await expect(claimPage.addEventPage).toBeVisible()
         sessionRecordName = 'tempEventRecord'
         break
       case 'expense':
-        await claimPage.clickAddButton()
         await expect(claimPage.addExpensePage).toBeVisible()
         sessionRecordName = 'tempExpenseRecord'
         break
@@ -119,7 +118,7 @@ Then(
   'the {string} type record is added successfully',
   async function (this: ICustomWorld, recordType: string) {
     const sidePanel = this.getPageObject<SidePanel>(SidePanel)
-    await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 50_000 })
+    await expect(sidePanel.toastNotifTitle).toHaveText('Success', { timeout: 30_000 })
     await expect(sidePanel.toastNotifMessage).toHaveText('Successfully Saved')
 
     // retrieve data from scenario-scope session

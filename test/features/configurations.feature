@@ -26,6 +26,7 @@ Feature: Claim Module - Configurations
       | Meals & Allowances                                                                                   |             | true     |
       | Test100CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$% |             | false    |
 
+  @functional-error @testrun
   Scenario Outline: Validate create a Claim Event type with invalid inputs
     Given the user views the "Events" type records
     When the user fills-up the "event" type details for new record with the following
@@ -44,6 +45,7 @@ Feature: Claim Module - Configurations
       |                                                                                                       | Required                         |
       | Test101CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^ | Should not exceed 100 characters |
 
+  @functional-error
   Scenario: Validate creating a duplicate Claim Event record
     Given the user views the "Events" type records
     And the user fills-up the "event" type details for new record with the following
@@ -76,6 +78,7 @@ Feature: Claim Module - Configurations
       | Training Fee                                                                                         | qwerty      | true     |
       | Test100CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$% |             | false    |
 
+  @functional-error
   Scenario Outline: Validate create a Claim Expense type with invalid inputs
     Given the user views the "Expense" type records
     When the user fills-up the "expense" type details for new record with the following
@@ -94,6 +97,7 @@ Feature: Claim Module - Configurations
       |                                                                                                       | Required                         |
       | Test101CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^ | Should not exceed 100 characters |
 
+  @functional-error
   Scenario: Validate creating a duplicate Claim Expense record
     Given the user views the "Expense" type records
     And the user fills-up the "expense" type details for new record with the following

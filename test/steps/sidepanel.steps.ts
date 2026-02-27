@@ -7,6 +7,6 @@ Given(
   async function (this: ICustomWorld, moduleName: string) {
     // TODO rach : enhance this. validate acceptable module name param
     const sidePanel = this.getPageObject<SidePanel>(SidePanel)
-    await sidePanel.clickModule(moduleName)
+    await sidePanel.clickASidePanelModule(moduleName)
   },
 )

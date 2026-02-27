@@ -8,14 +8,12 @@ export class LoginPage {
   readonly usernameInput: Locator
   readonly passwordInput: Locator
   readonly loginButton: Locator
-  readonly pageHeading: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.usernameInput = page.locator('//input[@placeholder="Username"]')
-    this.passwordInput = page.locator('//input[@placeholder="Password"]')
-    this.loginButton = page.locator('//button[@type="submit"]')
-    this.pageHeading = page.locator('//h6')
+    this.usernameInput = page.getByRole('textbox', { name: 'Username' })
+    this.passwordInput = page.getByRole('textbox', { name: 'Password' })
+    this.loginButton = page.getByRole('button', { name: 'Login' })
   }
 
   /**
@@ -57,22 +55,5 @@ export class LoginPage {
     await this.enterUsername(username)
     await this.enterPassword(password)
     await this.clickLogin()
-  }
-
-  /**
-   * Get the current page heading text
-   * @returns The page heading text
-   */
-  async getPageHeading(): Promise<string> {
-    return (await this.pageHeading.textContent()) ?? ''
-  }
-
-  /**
-   * Check if currently on the expected page after Login
-   * @returns True if on the expected page, false otherwise
-   */
-  async isOnPage(pageName: string): Promise<boolean> {
-    const heading = await this.getPageHeading()
-    return heading.includes(pageName)
   }
 }

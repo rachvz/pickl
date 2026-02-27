@@ -34,13 +34,11 @@ export class ClaimPage {
     this.expenseRecordPage = page.getByRole('heading', { name: 'Expense Types', exact: true })
     this.addEventPage = page.getByRole('heading', { name: 'Add Event', exact: true })
     this.addExpensePage = page.getByRole('heading', { name: 'Add Expense Type', exact: true })
-    this.configurationButton = page.locator(
-      '//div[@class="oxd-topbar-body"]//span[text()="Configuration "]',
-    )
+    this.configurationButton = page.getByText('Configuration', { exact: true })
     this.configMenuItems = page.getByRole('menuitem')
     this.eventsMenuItem = page.getByText('Events')
     this.expenseMenuItem = page.getByText('Expense Types')
-    this.addButton = page.locator('//button[text()=" Add "]')
+    this.addButton = page.getByRole('button', { name: 'Add' })
     this.eventNameInput = page.locator('//label[text()="Event Name"]/../..//input')
     this.expenseNameInput = page.locator('//label[text()="Name"]/../..//input')
     this.descriptionInput = page.locator('//label[text()="Description"]/../..//textarea')
@@ -71,7 +69,7 @@ export class ClaimPage {
   /**
    * Click Configuration menu button
    */
-  async clickConfiguration() {
+  async clickConfigurationMenu() {
     await this.configurationButton.click()
   }
 

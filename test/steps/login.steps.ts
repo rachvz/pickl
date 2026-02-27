@@ -6,37 +6,30 @@ import { LoginPage } from '../../pages/LoginPage.js'
 import { ICustomWorld } from '../support/world.js'
 
 Given('the admin user login to Orangehrm site', async function (this: ICustomWorld) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
-  const loginPage = new LoginPage(this.page)
+  const loginPage = this.getPageObject<LoginPage>(LoginPage)
   const username = process.env.ADMIN_USERNAME!
   const password = process.env.ADMIN_PASSWORD!
   await loginPage.goto()
   await loginPage.login(username, password)
 
-  const isLandingDashboardPage = await loginPage.isOnPage('Dashboard')
-  expect(isLandingDashboardPage).toBeTruthy()
+  const dashboardPage = this.getPageObject<DashboardPage>(DashboardPage)
+  await expect(dashboardPage.dashboardViewPage).toBeVisible({ timeout: 30_000 })
 })
 
-Then('the {string} page is displayed', function (this: ICustomWorld, moduleName: string) {
-  if (!this.page) {
-    throw new Error('Page is not initialized')
-  }
-
+Then('the {string} page is displayed', async function (this: ICustomWorld, moduleName: string) {
   switch (moduleName.toLowerCase()) {
     case 'dashboard': {
-      const dashboard = new DashboardPage(this.page)
-      expect(dashboard.isOnDashboardPage()).toBeTruthy()
+      const dashboardPage = this.getPageObject<DashboardPage>(DashboardPage)
+      await expect(dashboardPage.dashboardViewPage).toBeVisible({ timeout: 30_000 })
       break
     }
     case 'claim': {
-      const claimPage = new ClaimPage(this.page)
-      expect(claimPage.isOnClaimPage()).toBeTruthy()
+      const claimPage = this.getPageObject<ClaimPage>(ClaimPage)
+      await expect(claimPage.claimViewPage).toBeVisible({ timeout: 30_000 })
       break
     }
-    default:
-      throw new Error('Module name provided is not handled.')
+    default: {
+      throw new Error('The module name provided is not yet handled.')
+    }
   }
 })

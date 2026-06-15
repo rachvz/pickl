@@ -1,6 +1,6 @@
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import { generate } from 'cucumber-html-reporter'
-import { existsSync, readFileSync, rmSync, writeFileSync } from 'fs'
+import { readFileSync, rmSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
 
 const options = {
@@ -24,16 +24,12 @@ const options = {
 
 // Clean previous report to avoid stale data
 const reportPath = './test-results/html-report'
-if (existsSync(reportPath)) {
-  rmSync(reportPath, { recursive: true, force: true })
-}
+rmSync(reportPath, { recursive: true, force: true })
 
 // Clean any stray JSON files
 const strayJsonFiles = ['./test-results/direct.json']
 strayJsonFiles.forEach(file => {
-  if (existsSync(file)) {
-    rmSync(file, { force: true })
-  }
+  rmSync(file, { force: true })
 })
 
 // Generate report
@@ -41,7 +37,7 @@ generate(options)
 
 // Customize the generated HTML
 const reportFile = './test-results/html-report/index.html'
-if (existsSync(reportFile)) {
+try {
   let htmlContent = readFileSync(reportFile, 'utf8')
 
   // Replace external favicon with pickle emoji
@@ -192,20 +188,22 @@ if (existsSync(reportFile)) {
   htmlContent = htmlContent.replace('PICKL Test Results', toggleButton)
 
   writeFileSync(reportFile, htmlContent, 'utf8')
+} catch (error) {
+  console.error('Failed to customize report HTML:', error)
+  console.warn('Report generated but customizations were not applied')
 }
 
 // Auto-open the report in the default browser
 const reportIndexPath = resolve('./test-results/html-report/index.html')
-const fileUrl = `file:///${reportIndexPath.replace(/\\/g, '/')}`
 
-const openCommand =
-  process.platform === 'win32'
-    ? `powershell -Command "Start-Process '${fileUrl}'"`
-    : process.platform === 'darwin'
-      ? `open ${reportIndexPath}`
-      : `xdg-open ${reportIndexPath}`
+// Use execFile to avoid shell injection vulnerabilities
+const isWindows = process.platform === 'win32'
+const isMac = process.platform === 'darwin'
 
-exec(openCommand, error => {
+const command = isWindows ? 'powershell' : isMac ? 'open' : 'xdg-open'
+const args = isWindows ? ['-Command', 'Start-Process', reportIndexPath] : [reportIndexPath]
+
+execFile(command, args, error => {
   if (error) {
     console.error(`Report location: ${reportIndexPath}`)
     console.error('(Could not auto-open browser - please open manually)')

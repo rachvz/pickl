@@ -26,7 +26,7 @@ Feature: Claim Module - Configurations
       | Meals & Allowances                                                                                   |             | true     |
       | Test100CharactersKLZXCVBNM1234567890!@#$%^&**() <>?":{}][~`QWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$% |             | false    |
 
-  @functional-error @testrun
+  @functional-error
   Scenario Outline: Validate create a Claim Event type with invalid inputs
     Given the user views the "Events" type records
     When the user fills-up the "event" type details for new record with the following
